@@ -1,0 +1,24 @@
+title: "Emperor Reborn"
+description: >-
+  Play Emperor: Battle for Dune on Windows 11 and modern PCs at the original
+  resolution, as it was originally intended. Free open-source launcher and
+  patcher with working online multiplayer for the classic Westwood Dune RTS.
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+url: "https://azmawee.github.io"
+baseurl: "/EmperorReborn"
+author: azmawee
+twitter:
+  card: summary
+lang: en_US
+
+# Only the landing page and docs are served; build artifacts and notes are ignored.
+exclude:
+  - dist/
+  - promo-drafts.md
+  - package.ps1
+  - "*.sln"
+  - "*.vcxproj"
+  - Detours-4.0.1/
