@@ -497,7 +497,7 @@ int wmain(int argc, wchar_t* argv[])
     connectToServerRadio = CreateWindowEx(0, WC_BUTTON, L"Connect to server", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_GROUP, x, y, 200, 24, window, nullptr, nullptr, nullptr);
     y += ySpace;
 
-    serverAddressTextbox = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, L"server ip here", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL, x + 20, y, 200, 24, window, nullptr, nullptr, nullptr);
+    serverAddressTextbox = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, L"host IP or hostname", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL, x + 20, y, 200, 24, window, nullptr, nullptr, nullptr);
     y += ySpace;
 
     testNetworkButton = CreateWindowEx(0, WC_BUTTON, L"Test connection", WS_CHILD | WS_VISIBLE, x + 20, y, 124, 24, window, nullptr, nullptr, nullptr);

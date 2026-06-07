@@ -100,7 +100,10 @@ PLAYING ONLINE (MULTIPLAYER) - QUICK VERSION
 ------------------------------------------------------------
 - One person hosts: pick "Host game / singleplayer" in the launcher.
   The host must open port 4005 (UDP and TCP) on their router.
-- Everyone else: pick "Connect to server" and type the host's IP.
+- Everyone else: pick "Connect to server" and type the host's
+  IP address OR a hostname / dynamic DNS name (for example
+  something.duckdns.org). Handy if the host's home IP keeps
+  changing - they share one stable name instead.
   Use "Test connection" AFTER the host has clicked Play.
 - In the game: Multiplayer -> type any username + an 8-character
   password -> Login -> Custom.
