@@ -1,0 +1,126 @@
+============================================================
+  EMPEROR REBORN - How to install & play
+  Emperor: Battle for Dune, running nicely on modern PCs
+============================================================
+
+Made by azmawee
+  GitHub:   https://github.com/azmawee
+  Facebook: https://facebook.com/azmawee
+
+Based on EmperorLauncher by Tom Mason (wheybags).
+
+
+------------------------------------------------------------
+WHAT YOU NEED FIRST
+------------------------------------------------------------
+- A Windows 10 or 11 PC.
+- Your own copy of Emperor: Battle for Dune (the ENGLISH
+  version), the original 4 CDs or disc images you can mount.
+  This tool does NOT come with the game - you must own it.
+- The official Westwood/EA v1.09 patch file: EM109EN.EXE
+  This is copyrighted by EA/Westwood, so it is NOT included
+  here. You must get your own copy and drop it next to
+  EmperorReborn.exe (see STEP 1). The launcher checks for it
+  on first run and will tell you if it is missing.
+
+That's it. You do NOT need to install any extra runtime or
+"Visual C++" thing. It just works.
+
+
+------------------------------------------------------------
+STEP 1 - PUT THE FILES SOMEWHERE
+------------------------------------------------------------
+Unzip this folder anywhere you like, for example:
+    C:\Games\EmperorReborn\
+
+Keep these files together in the same folder:
+    EmperorReborn.exe
+    EmperorHooks.dll
+    EM109EN.EXE        <- you supply this one yourself
+(If you separate them, it won't work.)
+
+
+------------------------------------------------------------
+STEP 2 - RUN IT
+------------------------------------------------------------
+Double-click  EmperorReborn.exe
+
+The first time, it will ask you to insert or mount your
+Emperor CDs one by one (Disc 1 install, then Atreides,
+Harkonnen, Ordos). Just pop them in / mount them when asked.
+It builds its own clean copy of the game for you.
+
+If EM109EN.EXE is not next to EmperorReborn.exe, the launcher
+will pop up and ask you to copy it there first.
+
+(This is a one-time thing. Next time it starts straight away.)
+
+
+------------------------------------------------------------
+STEP 3 - PICK YOUR RESOLUTION
+------------------------------------------------------------
+In the launcher window there is a "Resolution" dropdown:
+
+    640 x 480
+    800 x 600   <- default, nice and readable
+    1024 x 768
+    1152 x 864
+    Desktop (match screen)
+
+- Lower numbers  = BIGGER text/buttons, easier to read and play.
+- Higher numbers = sharper but smaller text.
+- "Desktop (match screen)" = sharpest, fills the screen using
+  your monitor's full resolution, but the text gets small on
+  big/4K screens.
+
+Your choice is saved, so you only set it once.
+
+Tick "Fullscreen" if you want it to fill the whole screen.
+Then click "Play". Done!
+
+
+------------------------------------------------------------
+TIP - IF FULLSCREEN LOOKS SMALL / BOXED IN
+------------------------------------------------------------
+If you choose a low resolution + Fullscreen but the game shows
+as a small box in the middle of a big black screen, your
+graphics card scaling is turned off. Fix it once:
+
+  NVIDIA: NVIDIA Control Panel
+          -> Adjust desktop size and position
+          -> Scaling: Full-screen
+  AMD/Intel: look for a similar "Scaling Mode: Full panel"
+             option in their control panel.
+
+After that, low resolutions will properly zoom to fill the screen.
+
+
+------------------------------------------------------------
+PLAYING ONLINE (MULTIPLAYER) - QUICK VERSION
+------------------------------------------------------------
+- One person hosts: pick "Host game / singleplayer" in the launcher.
+  The host must open port 4005 (UDP and TCP) on their router.
+- Everyone else: pick "Connect to server" and type the host's IP.
+  Use "Test connection" AFTER the host has clicked Play.
+- In the game: Multiplayer -> type any username + an 8-character
+  password -> Login -> Custom.
+- Host clicks Host; others click Refresh to see the game.
+- Host picks Deathmatch or Co-op Campaign, everyone clicks Accept,
+  host clicks Play.
+
+Don't click random buttons or change other settings - only the
+basics are wired up.
+
+
+------------------------------------------------------------
+HAVING TROUBLE?
+------------------------------------------------------------
+- "It won't start": make sure EmperorReborn.exe and
+  EmperorHooks.dll are in the SAME folder.
+- "EM109EN.EXE required" popup: copy your own EM109EN.EXE into
+  the same folder as EmperorReborn.exe.
+- Put the game in a folder with English-only characters in the
+  path (no special letters).
+- Only the English version of the game is supported.
+
+Have fun! - azmawee

@@ -1,0 +1,32 @@
+#!/bin/sh
+# Emperor Reborn commit guard.
+# Bans em dash (U+2014) and en dash (U+2013) from all committed text files.
+# Activated via: git config core.hooksPath .githooks
+
+files=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$files" ] && exit 0
+
+bad=""
+for f in $files; do
+  # Skip files git treats as binary.
+  git show ":$f" 2>/dev/null | grep -Iq . || continue
+  # perl exits 1 on the first em/en dash it sees, 0 otherwise.
+  if git show ":$f" 2>/dev/null | perl -CSD -ne 'exit 1 if /[\x{2013}\x{2014}]/'; then
+    :
+  else
+    bad="$bad $f"
+  fi
+done
+
+if [ -n "$bad" ]; then
+  echo "" >&2
+  echo "COMMIT REJECTED: em dash (U+2014) or en dash (U+2013) found in:" >&2
+  for f in $bad; do echo "    $f" >&2; done
+  echo "" >&2
+  echo "Em dashes are banned in this repo. Replace them with ASCII" >&2
+  echo "(a hyphen '-', a colon ':', a comma ',', or 'to') and commit again." >&2
+  echo "" >&2
+  exit 1
+fi
+
+exit 0
