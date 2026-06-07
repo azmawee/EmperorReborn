@@ -59,6 +59,9 @@ Emperor Reborn:
   instead of sitting in a tiny box in the middle of a black 4K screen.
 - **Brings back online multiplayer** with direct IP connection and Co-op Campaign, since the
   official Westwood Online (WOL) servers are long gone.
+- **Lets the host be reached by name**, not just a raw IP address. You can enter a hostname or a
+  free dynamic DNS (DDNS) name when connecting, which is ideal for home internet connections
+  where the public IP changes over time.
 
 It is a maintained fork of [**wheybags/EmperorLauncher**](https://github.com/wheybags/EmperorLauncher)
 by **Tom Mason**, with extra quality-of-life options (selectable resolution, proper fullscreen
@@ -73,6 +76,9 @@ scaling, and a friendlier first-run experience).
 - **Proper fullscreen scaling**: your chosen resolution is scaled up to fill the entire
   screen instead of a small centered box on a 4K/ultrawide desktop
 - **Working online multiplayer** via direct IP connection (no dead Westwood Online required)
+- **Connect by hostname or dynamic DNS (DDNS)**, not just a raw IP, so a host on a
+  home connection with a changing IP can share one stable name (for example a free
+  `duckdns.org` or `no-ip.com` address)
 - **Co-op Campaign** mode
 - **Self-contained**: links the C runtime statically, so **no Visual C++ Redistributable**
   is needed on the player's PC
@@ -136,6 +142,22 @@ The official Westwood Online servers are gone, so Emperor Reborn uses **direct I
 > Only the bare minimum needed for multiplayer is wired up, so stick to the steps above and avoid
 > clicking unrelated buttons or changing other settings.
 
+### Connecting by hostname or dynamic DNS (DDNS)
+
+The **Connect to server** box accepts more than a raw IP address. You can type:
+
+- an **IPv4 address**, for example `203.0.113.7`
+- a **hostname or dynamic DNS (DDNS) name**, for example `myhost.duckdns.org`
+
+This matters because most home internet connections have a **dynamic public IP** that changes
+every few days. Instead of looking up and re-sharing your IP every time, the host can register a
+free DDNS name (for example with **DuckDNS**, **No-IP**, or **Cloudflare**) that always points at
+their current IP, and just share that one stable name. Emperor Reborn resolves the name (its A
+record) when you connect and when you press **Test connection**.
+
+The host still needs to open / forward **port 4005 (UDP and TCP)** on their router. DDNS only
+keeps the address stable; it does not open the port for you.
+
 ## Building from source
 
 Requirements:
@@ -181,6 +203,17 @@ your GPU scaling to "Full-screen" (see [Choosing your resolution](#choosing-your
 Yes. The original Westwood Online servers are dead, but Emperor Reborn restores online play via
 direct IP connection, including Co-op Campaign. See [Online multiplayer](#online-multiplayer).
 
+**Can I host without sharing my IP every time, or with a changing home IP?**
+Yes. The connect box accepts a hostname or dynamic DNS (DDNS) name, not just a raw IP. Register a
+free DDNS name (DuckDNS, No-IP, Cloudflare, and similar) that tracks your current IP and share
+that stable name instead. You still need to forward port 4005 (UDP and TCP) on your router. See
+[Connecting by hostname or dynamic DNS (DDNS)](#connecting-by-hostname-or-dynamic-dns-ddns).
+
+**Does it support IPv6?**
+The host address is resolved over IPv4 (A record) today, which covers the vast majority of
+players. Full IPv6 transport is possible as a future step but is intentionally not enabled yet,
+to keep the proven IPv4 multiplayer path stable.
+
 **Do I need the original game?**
 Yes. You must own *Emperor: Battle for Dune* (English) and provide your own CDs/disc images, plus
 your own copy of the official EA v1.09 patch `EM109EN.EXE`. No game data is distributed here.
@@ -221,5 +254,7 @@ respective owners. You must own the game to use this tool.
 
 <sub>Keywords: Emperor Battle for Dune Windows 11, Emperor Battle for Dune Windows 10, play Emperor
 Battle for Dune modern PC, Emperor Battle for Dune resolution fix, Emperor Battle for Dune
-multiplayer online, Emperor Battle for Dune patch, Westwood Dune RTS, Dune real-time strategy,
-EmperorLauncher fork, Emperor Reborn launcher.</sub>
+multiplayer online, Emperor Battle for Dune LAN, Emperor Battle for Dune hostname, Emperor Battle
+for Dune dynamic DNS, Emperor Battle for Dune DDNS, Emperor Battle for Dune connect by name,
+Emperor Battle for Dune patch, Westwood Dune RTS, Dune real-time strategy, EmperorLauncher fork,
+Emperor Reborn launcher.</sub>

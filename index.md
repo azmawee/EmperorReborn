@@ -29,6 +29,8 @@ playing exactly **as it was originally intended**, with **online multiplayer wor
 - **Scales properly to fullscreen** so a low resolution fills your whole monitor instead of
   sitting in a tiny box on a 4K screen.
 - **Restores online multiplayer** via direct IP connection, including Co-op Campaign.
+- **Connect by hostname or dynamic DNS (DDNS)**, not just a raw IP, so a host with a changing
+  home IP can share one stable name (for example a free `duckdns.org` address).
 - **Self-contained**: no Visual C++ Redistributable required.
 
 ## Why people use it
@@ -37,6 +39,10 @@ If you have been searching for how to **play Emperor: Battle for Dune on Windows
 **fix the resolution or tiny screen**, or how to get **multiplayer working again** on a modern PC,
 Emperor Reborn is built for exactly that. The goal is preservation: play the original game the way
 it ran in 2001, stable on today's hardware, not a remaster.
+
+For online play, Emperor Reborn even lets the host be reached by a **hostname or dynamic DNS
+(DDNS) name** instead of a raw IP, so friends can connect with one stable address even when the
+host's home IP keeps changing.
 
 ## Get started
 

@@ -3,6 +3,7 @@
 #include "Error.hpp"
 #include "CRC.hpp"
 #include "WolCommon.hpp"
+#include "ResolveHost.hpp"
 
 
 void WolProxyClient::initialise()
@@ -11,7 +12,15 @@ void WolProxyClient::initialise()
   release_assert(sock != INVALID_SOCKET);
   this->serverAddr.sin_family = AF_INET;
   this->serverAddr.sin_port = htons(wolPortH);
-  this->serverAddr.sin_addr.S_un.S_addr = inet_addr(this->serverAddrString.c_str());
+
+  // Accept an IPv4 literal or a hostname / dynamic DNS name (e.g. duckdns.org).
+  // Fall back to inet_addr so a raw IP behaves exactly as before if resolution
+  // is somehow unavailable.
+  uint32_t resolvedAddr = 0;
+  if (resolveHostV4(this->serverAddrString, resolvedAddr))
+    this->serverAddr.sin_addr.S_un.S_addr = resolvedAddr;
+  else
+    this->serverAddr.sin_addr.S_un.S_addr = inet_addr(this->serverAddrString.c_str());
 
   this->servservAddr = this->serverAddr.sin_addr;
 }

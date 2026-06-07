@@ -118,6 +118,7 @@ nmake</Command>
     <ClInclude Include="PatchDebugLog.hpp" />
     <ClInclude Include="PatchRegistry.hpp" />
     <ClInclude Include="PatchWindowManagement.hpp" />
+    <ClInclude Include="ResolveHost.hpp" />
     <ClInclude Include="WolCommon.hpp" />
     <ClInclude Include="WolIrcServer.hpp" />
     <ClInclude Include="WolProxyBase.hpp" />
@@ -137,6 +138,7 @@ nmake</Command>
     <ClCompile Include="PatchDebugLog.cpp" />
     <ClCompile Include="PatchRegistry.cpp" />
     <ClCompile Include="PatchWindowManagement.cpp" />
+    <ClCompile Include="ResolveHost.cpp" />
     <ClCompile Include="WolIrcServer.cpp" />
     <ClCompile Include="WolProxyBase.cpp" />
     <ClCompile Include="WolProxyClient.cpp" />

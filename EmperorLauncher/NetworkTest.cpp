@@ -4,6 +4,7 @@
 #include "../EmperorHooks/Error.hpp"
 #include "../EmperorHooks/WolCommon.hpp"
 #include "../EmperorHooks/CRC.hpp"
+#include "../EmperorHooks/ResolveHost.hpp"
 #pragma comment (lib, "Ws2_32.lib")
 
 void testNetwork(HWND parent, const std::string& serverAddrString)
@@ -15,7 +16,14 @@ void testNetwork(HWND parent, const std::string& serverAddrString)
   sockaddr_in serverAddr = {};
   serverAddr.sin_family = AF_INET;
   serverAddr.sin_port = htons(wolPortH);
-  serverAddr.sin_addr.S_un.S_addr = inet_addr(serverAddrString.c_str());
+
+  // Accept an IPv4 literal or a hostname / dynamic DNS name, matching what the
+  // in-game proxy does. Fall back to inet_addr for a raw IP.
+  uint32_t resolvedAddr = 0;
+  if (resolveHostV4(serverAddrString, resolvedAddr))
+    serverAddr.sin_addr.S_un.S_addr = resolvedAddr;
+  else
+    serverAddr.sin_addr.S_un.S_addr = inet_addr(serverAddrString.c_str());
 
   bool udpOk = false;
   {

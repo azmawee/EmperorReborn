@@ -11,7 +11,7 @@ public:
 
   bool fullscreen = true;
   bool hostGame = true;
-  std::string serverAddress = "server ip here";
+  std::string serverAddress = "host IP or hostname";
 
   bool pauseOnStartup = false;
   bool forceCursorVisible = false;
