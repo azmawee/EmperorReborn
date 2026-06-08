@@ -19,9 +19,11 @@ WHAT YOU NEED FIRST
   This tool does NOT come with the game - you must own it.
 - The official Westwood/EA v1.09 patch file: EM109EN.EXE
   This is copyrighted by EA/Westwood, so it is NOT included
-  here. You must get your own copy and drop it next to
-  EmperorReborn.exe (see STEP 1). The launcher checks for it
-  on first run and will tell you if it is missing.
+  here. It was a free patch and is widely available online -
+  a quick web search for EM109EN.EXE will find it. Get your
+  own copy and drop it next to EmperorReborn.exe (see STEP 1).
+  The launcher checks for it on first run and will tell you if
+  it is missing.
 
 That's it. You do NOT need to install any extra runtime or
 "Visual C++" thing. It just works.

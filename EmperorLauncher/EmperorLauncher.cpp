@@ -217,6 +217,7 @@ HWND resolutionCombo = nullptr;
 HWND hostGameRadio = nullptr;
 HWND portsLabel = nullptr;
 HWND connectToServerRadio = nullptr;
+HWND serverAddressLabel = nullptr;
 HWND serverAddressTextbox = nullptr;
 
 HWND playButton = nullptr;
@@ -495,6 +496,9 @@ int wmain(int argc, wchar_t* argv[])
     y += ySpace;
 
     connectToServerRadio = CreateWindowEx(0, WC_BUTTON, L"Connect to server", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_GROUP, x, y, 200, 24, window, nullptr, nullptr, nullptr);
+    y += ySpace;
+
+    serverAddressLabel = CreateWindowEx(0, WC_STATIC, L"Server IP or hostname (dynamic DNS supported)", WS_CHILD | WS_VISIBLE, x + 20, y, 320, 24, window, nullptr, nullptr, nullptr);
     y += ySpace;
 
     serverAddressTextbox = CreateWindowEx(WS_EX_CLIENTEDGE, WC_EDIT, L"host IP or hostname", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL, x + 20, y, 200, 24, window, nullptr, nullptr, nullptr);

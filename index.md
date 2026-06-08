@@ -39,8 +39,8 @@ playing exactly **as it was originally intended**, with **online multiplayer wor
 |---|---|
 | Operating System | Windows 10 (1809 or later) or Windows 11 |
 | Architecture | x64 (64-bit) |
-| Original Game | Emperor: Battle for Dune (English version) |
-| Required Patch | EA v1.09 (EM109EN.EXE) |
+| Original Game | Emperor: Battle for Dune (English): all 4 CDs, or 4 ISO images you can mount |
+| Required Patch | EA v1.09 English patch `EM109EN.EXE`, placed in the same folder as `EmperorReborn.exe`. You supply your own; it was a free patch and is widely available online, so a quick web search for `EM109EN.EXE` will find it |
 | Disk Space | ~2 GB for full game installation |
 | Network | Optional, for online multiplayer (direct IP or DDNS) |
 | Visual C++ Redistributable | Not required (self-contained) |
@@ -69,8 +69,10 @@ host's home IP keeps changing.
 1. **Download** the latest release zip from the
    [releases page](https://github.com/azmawee/EmperorReborn/releases/latest).
 2. Keep `EmperorReborn.exe` and `EmperorHooks.dll` together, and add your own copy of the official
-   EA v1.09 patch `EM109EN.EXE` in the same folder.
-3. Run `EmperorReborn.exe` and follow the prompts. Full steps are in the
+   EA v1.09 patch `EM109EN.EXE` in the **same folder**.
+3. **Have all 4 game discs ready**: insert the CDs, or mount the 4 ISO images.
+4. Run `EmperorReborn.exe`. On first run it asks for each disc in turn (Disc 1 install, then
+   Atreides, Harkonnen, Ordos) and builds its own clean copy of the game. Full steps are in the
    [install guide](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt).
 
 You must own the **English** version of *Emperor: Battle for Dune*. No game data and no EA patch
@@ -94,11 +96,11 @@ Yes. Multiplayer works via direct IP connection, including Co-op Campaign mode. 
 
 ### Do I need the original game CD or installation?
 
-Yes. You must own the English version of *Emperor: Battle for Dune*. Emperor Reborn does not distribute any game data, music, videos, or assets. You supply your own legally-owned game files.
+Yes. You must own the English version of *Emperor: Battle for Dune*. On first run the launcher asks you to insert or mount all 4 game discs (or their ISO images), one at a time, and builds its own clean install from them. Emperor Reborn does not distribute any game data, music, videos, or assets; you supply your own legally-owned discs.
 
 ### Where do I get the EA v1.09 patch (EM109EN.EXE)?
 
-The official EA v1.09 patch is required but not distributed by Emperor Reborn. You can find it through community archives or original EA distribution channels. Place `EM109EN.EXE` in the same folder as `EmperorReborn.exe` and `EmperorHooks.dll`.
+The official EA v1.09 English patch `EM109EN.EXE` is required but not distributed by Emperor Reborn. It was a free patch and is widely available online, so a quick web search for `EM109EN.EXE` will find it on game patch archives. Place it in the same folder as `EmperorReborn.exe` and `EmperorHooks.dll`.
 
 ### Is Emperor Reborn safe and legal to use?
 

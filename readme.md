@@ -91,9 +91,10 @@ You must **own a copy of _Emperor: Battle for Dune_ (English version)**, the ori
 or mountable disc images. This project does **not** include any game data; you provide your own discs.
 
 > **You must also supply the official Westwood/EA v1.09 patch `EM109EN.EXE` yourself.**
-> It is copyrighted by EA/Westwood and is **not** distributed with Emperor Reborn. Place your own
-> copy of `EM109EN.EXE` in the **same folder** as `EmperorReborn.exe` before first run. On first
-> run the launcher checks for it and will prompt you if it is missing.
+> It is copyrighted by EA/Westwood and is **not** distributed with Emperor Reborn. It was a free
+> patch and is widely available online, so a quick web search for `EM109EN.EXE` will find it. Place
+> your own copy in the **same folder** as `EmperorReborn.exe` before first run. On first run the
+> launcher checks for it and will prompt you if it is missing.
 
 1. **Put the files together.** Unzip Emperor Reborn anywhere (for example `C:\Games\EmperorReborn\`).
    Keep `EmperorReborn.exe`, `EmperorHooks.dll`, and your own `EM109EN.EXE` **in the same folder**.
