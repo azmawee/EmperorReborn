@@ -1,9 +1,8 @@
 ---
 title: "Emperor Reborn: Play Emperor: Battle for Dune on Windows 11 & Modern PCs"
 description: "Free launcher and patcher to play Emperor: Battle for Dune on Windows 10 and 11 at the original resolution, as intended, with online multiplayer restored."
+image: /EmperorReborn/screenshots/gameplay-windows11.png
 ---
-
-# Emperor Reborn
 
 ## Play *Emperor: Battle for Dune* on Windows 11 and modern PCs, as it was meant to be played
 
