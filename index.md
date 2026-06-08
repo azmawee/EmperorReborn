@@ -89,6 +89,10 @@ Yes. Emperor Reborn is built specifically to make *Emperor: Battle for Dune* run
 
 Emperor Reborn handles this automatically. Original resolutions (640x480, 800x600, 1024x768, 1152x864) are scaled to fill your entire monitor instead of appearing as a small box in the centre of a 4K screen. The aspect ratio and authentic look stay intact.
 
+### What are the best settings for a 4K monitor?
+
+On a 4K monitor, avoid the Desktop (match screen) option: it renders the UI at full 4K and makes the fonts and building tooltips very small. Instead pick a lower resolution and tick Fullscreen, so the whole game is scaled up to fill the screen. 1024x768 gives the best balance of a readable UI and sharpness, and 800x600 gives the largest, most readable text. For best results, set your GPU scaling to Full-screen (in the NVIDIA Control Panel under Adjust desktop size and position; AMD and Intel have an equivalent) so the lower resolution fills the entire panel.
+
 ### Does Emperor Reborn restore online multiplayer?
 
 Yes. Multiplayer works via direct IP connection, including Co-op Campaign mode. Emperor Reborn also supports connection by hostname or Dynamic DNS (DDNS) addresses (for example `yourname.duckdns.org`), so hosts with changing home IPs can share one stable name with friends.

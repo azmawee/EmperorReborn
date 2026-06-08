@@ -128,6 +128,20 @@ Tick **Fullscreen** to have the game fill the screen at that resolution.
 
 Lower resolutions give a bigger, easier-to-read UI. Higher resolutions are sharper but with smaller text.
 
+### Best settings for a 4K monitor
+
+On a 4K (or other high-DPI) monitor, do **not** use the **Desktop (match screen)** option: it
+renders the game at full 4K and the original UI, fonts, and building tooltips end up far too small
+to read. Instead pick a **lower resolution** and tick **Fullscreen** so the whole game is scaled up
+to fill the screen:
+
+- **`1024x768` + Fullscreen** is the best balance of a readable UI and sharpness.
+- **`800x600` + Fullscreen** gives the largest, most readable text.
+
+Then set your GPU scaling to **Full-screen** (NVIDIA Control Panel, *Adjust desktop size and
+position*; AMD and Intel have an equivalent) so the lower resolution fills the entire panel instead
+of sitting in a small box.
+
 ## Online multiplayer
 
 The official Westwood Online servers are gone, so Emperor Reborn uses **direct IP** connections.
