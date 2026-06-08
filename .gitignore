@@ -413,6 +413,3 @@ EM109EN.DLL
 
 # Packaged release output (attach to GitHub Releases instead of committing)
 /dist/
-
-# Local marketing/promo drafts (not part of the project)
-/promo-drafts.md
