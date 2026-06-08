@@ -53,9 +53,6 @@ playing exactly **as it was originally intended**, with **online multiplayer wor
 ![Emperor Reborn launcher interface showing resolution selection](screenshots/launcher-ui.png)
 *The Emperor Reborn launcher with resolution and graphics options*
 
-![Multiplayer direct IP connection screen with DDNS hostname support](screenshots/multiplayer-connect.png)
-*Multiplayer connection screen supporting both direct IP and DDNS hostnames*
-
 ## Why people use it
 
 If you have been searching for how to **play Emperor: Battle for Dune on Windows 11**, how to
