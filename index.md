@@ -1,156 +1,134 @@
 ---
-title: "Emperor Reborn - Play Emperor: Battle for Dune on Windows 11 & Modern PCs"
-description: "Free launcher and patcher to play Emperor: Battle for Dune on Windows 10 and 11 at the original resolution, as intended, with online multiplayer restored."
+title: "Emperor Reborn - Emperor: Battle for Dune on Windows 10/11"
+description: "A launcher that gets Emperor: Battle for Dune running on Windows 10 and 11: fullscreen scaling, original resolutions, and multiplayer over direct IP or DDNS."
 image: /screenshots/gameplay-windows11.png
 ---
 
-## Play *Emperor: Battle for Dune* on Windows 11 and modern PCs, as it was meant to be played
+# Emperor Reborn
 
-**Emperor Reborn** is a free, open-source launcher and patcher for the classic Westwood
-real-time strategy game **_Emperor: Battle for Dune_ (2001)**. It makes the game install and
-run smoothly on **Windows 10 and Windows 11**, at its **original resolutions**, looking and
-playing exactly **as it was originally intended**, with **online multiplayer working again**.
+A launcher I wrote to play *Emperor: Battle for Dune* on modern Windows.
 
 [**Download the latest release**](https://github.com/azmawee/EmperorReborn/releases/latest)
 &nbsp;|&nbsp;
-[**Source code on GitHub**](https://github.com/azmawee/EmperorReborn)
+[**Source on GitHub**](https://github.com/azmawee/EmperorReborn)
 &nbsp;|&nbsp;
 [**Install guide**](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt)
 
----
+## Why this exists
 
-## What it does
+I wanted to play Emperor again on my Windows 11 machine and hit the usual wall. The old installer
+fights modern Windows, and even once it runs the game sits in a small box in the middle of the
+monitor. Multiplayer has been dead since Westwood Online shut down years ago.
 
-- Installs and runs *Emperor: Battle for Dune* cleanly on **modern Windows (10 and 11)**, with no
-  compatibility hacks.
-- Keeps the **original 4:3 resolutions and authentic look** (`640x480`, `800x600`, `1024x768`,
-  `1152x864`, or Desktop), so the menus and fonts stay the right size.
-- **Scales properly to fullscreen** so a low resolution fills your whole monitor instead of
-  sitting in a tiny box on a 4K screen.
-- **Restores online multiplayer** via direct IP connection, including Co-op Campaign.
-- **Connect by hostname or dynamic DNS (DDNS)**, not just a raw IP, so a host with a changing
-  home IP can share one stable name (for example a free `duckdns.org` address).
-- **Self-contained**: no Visual C++ Redistributable required.
+Tom Mason (wheybags) already wrote a patch that solves the hardest parts: getting the game to
+install and launch cleanly without the original disc check. I started from his work and added the
+few things I personally wanted on top, then wrapped it in a launcher so you do not have to touch
+the registry.
 
-## System Requirements
+## What I added on top of wheybags' patch
 
-| Requirement | Specification |
-|---|---|
-| Operating System | Windows 10 (1809 or later) or Windows 11 |
-| Architecture | x64 (64-bit) |
-| Original Game | Emperor: Battle for Dune (English): all 4 CDs, or 4 ISO images you can mount |
-| Required Patch | EA v1.09 English patch `EM109EN.EXE`, placed in the same folder as `EmperorReborn.exe`. You supply your own; it was a free patch and is widely available online, so a quick web search for `EM109EN.EXE` will find it |
-| Disk Space | ~2 GB for full game installation |
-| Network | Optional, for online multiplayer (direct IP or DDNS) |
-| Visual C++ Redistributable | Not required (self-contained) |
+**Fullscreen scaling.** Pick a resolution and it fills the monitor instead of pillarboxing. The
+4:3 aspect is kept, so nothing stretches. On a 4K screen the original 800x600 looks like a real
+fullscreen game again instead of a postage stamp.
 
-## Screenshots
+**Pick your resolution in the launcher.** 640x480, 800x600, 1024x768, 1152x864, or match the
+desktop. The choice is saved between runs. Lower resolutions keep the UI and fonts readable, which
+matters a lot on a big monitor.
 
-![Emperor Battle for Dune running fullscreen on Windows 11 at 1024x768 with original UI](screenshots/gameplay-windows11.png)
-*Emperor: Battle for Dune running at original resolution on Windows 11, properly scaled to fullscreen*
+**Connect by hostname or DDNS in multiplayer.** Type something like `yourname.duckdns.org` instead
+of a raw IP. Home connections rotate their public IP, and I got tired of looking it up and sending
+friends a new number every time. A DDNS name stays put.
 
-![Emperor Reborn launcher interface showing resolution selection](screenshots/launcher-ui.png)
-*The Emperor Reborn launcher with resolution and graphics options*
+**Single exe, no VC++ Redist.** The C runtime is linked in statically. One less thing to install,
+one less thing to break.
 
-## Why people use it
+## Install
 
-If you have been searching for how to **play Emperor: Battle for Dune on Windows 11**, how to
-**fix the resolution or tiny screen**, or how to get **multiplayer working again** on a modern PC,
-Emperor Reborn is built for exactly that. The goal is preservation: play the original game the way
-it ran in 2001, stable on today's hardware, not a remaster.
+You need three things:
 
-For online play, Emperor Reborn even lets the host be reached by a **hostname or dynamic DNS
-(DDNS) name** instead of a raw IP, so friends can connect with one stable address even when the
-host's home IP keeps changing.
+- The English version of *Emperor: Battle for Dune* (the 4 CDs, or 4 ISO images you can mount)
+- EA's official v1.09 patch, `EM109EN.EXE` (free patch, still floating around the usual archives; I
+  do not ship it, it is EA's)
+- This launcher
 
-## Get started
+Then:
 
-1. **Download** the latest release zip from the
-   [releases page](https://github.com/azmawee/EmperorReborn/releases/latest).
-2. Keep `EmperorReborn.exe` and `EmperorHooks.dll` together, and add your own copy of the official
-   EA v1.09 patch `EM109EN.EXE` in the **same folder**.
-3. **Have all 4 game discs ready**: insert the CDs, or mount the 4 ISO images.
-4. Run `EmperorReborn.exe`. On first run it asks for each disc in turn (Disc 1 install, then
-   Atreides, Harkonnen, Ordos) and builds its own clean copy of the game. Full steps are in the
-   [install guide](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt).
+1. Put `EmperorReborn.exe`, `EmperorHooks.dll`, and your own `EM109EN.EXE` in one folder.
+2. Run `EmperorReborn.exe`. The first run asks for each disc in turn (Disc 1, then Atreides,
+   Harkonnen, Ordos) and builds its own clean copy of the game. It does not touch or need an
+   existing install.
+3. Pick a resolution, tick Fullscreen, hit Play.
 
-You must own the **English** version of *Emperor: Battle for Dune*. No game data and no EA patch
-are distributed here; you supply your own.
+First-run setup is a one-time thing. After that it goes straight to the launcher. Full step by step
+is in the [install guide](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt).
 
----
+## Multiplayer
 
-## Frequently Asked Questions
+Westwood Online is gone, so this uses direct IP.
 
-### Will Emperor: Battle for Dune work on Windows 11?
+- The host picks **Host game / singleplayer** and forwards **port 4005 (UDP and TCP)** on their
+  router.
+- Everyone else picks **Connect to server** and types the host's IP, hostname, or DDNS name.
+- Hit **Test connection** only after the host has clicked Play.
+- In game: **Multiplayer**, pick a username and an 8-character password, **Login**, **Custom**.
+  Host clicks **Host**, others click **Refresh** if the game does not show up. Pick Deathmatch or
+  Co-op Campaign, everyone **Accept**, host clicks **Play**.
 
-Yes. Emperor Reborn is built specifically to make *Emperor: Battle for Dune* run cleanly on Windows 10 and Windows 11 without compatibility hacks or virtual machines. The game launches, runs stable, and uses original resolutions properly scaled to modern displays.
+DDNS only keeps the address stable. You still have to forward the port yourself.
 
-### How do I fix the tiny resolution on a 4K monitor?
+## On a 4K monitor
 
-Emperor Reborn handles this automatically. Original resolutions (640x480, 800x600, 1024x768, 1152x864) are scaled to fill your entire monitor instead of appearing as a small box in the centre of a 4K screen. The aspect ratio and authentic look stay intact.
+Do not use the "Desktop (match screen)" option on 4K. It renders at full 4K and the original fonts
+and tooltips end up too small to read. Pick a lower resolution and tick Fullscreen so it scales up:
 
-### What are the best settings for a 4K monitor?
+- **1024x768 + Fullscreen** is the best balance of readable UI and sharpness.
+- **800x600 + Fullscreen** gives the biggest text.
 
-On a 4K monitor, avoid the Desktop (match screen) option: it renders the UI at full 4K and makes the fonts and building tooltips very small. Instead pick a lower resolution and tick Fullscreen, so the whole game is scaled up to fill the screen. 1024x768 gives the best balance of a readable UI and sharpness, and 800x600 gives the largest, most readable text. For best results, set your GPU scaling to Full-screen (in the NVIDIA Control Panel under Adjust desktop size and position; AMD and Intel have an equivalent) so the lower resolution fills the entire panel.
+If it still sits in a small box, your GPU is set to "no scaling". Set scaling to Full-screen in
+your GPU control panel (NVIDIA Control Panel under *Adjust desktop size and position*; AMD and Intel
+have the same thing under a different name).
 
-### Does Emperor Reborn restore online multiplayer?
+## Tested on
 
-Yes. Multiplayer works via direct IP connection, including Co-op Campaign mode. Emperor Reborn also supports connection by hostname or Dynamic DNS (DDNS) addresses (for example `yourname.duckdns.org`), so hosts with changing home IPs can share one stable name with friends.
+Windows 11, which is what I run it on daily. Windows 10 should be fine too. If you run it somewhere
+else and it works (or it doesn't), open an issue and tell me.
 
-### Do I need the original game CD or installation?
+## FAQ
 
-Yes. You must own the English version of *Emperor: Battle for Dune*. On first run the launcher asks you to insert or mount all 4 game discs (or their ISO images), one at a time, and builds its own clean install from them. Emperor Reborn does not distribute any game data, music, videos, or assets; you supply your own legally-owned discs.
+**Does it work on Windows 11?**
+Yes, that is what I use. No VM, no compatibility shim.
 
-### Where do I get the EA v1.09 patch (EM109EN.EXE)?
+**Where do I get `EM109EN.EXE`?**
+EA does not host it anymore. Search the filename, it is on the usual patch archives.
 
-The official EA v1.09 English patch `EM109EN.EXE` is required but not distributed by Emperor Reborn. It was a free patch and is widely available online, so a quick web search for `EM109EN.EXE` will find it on game patch archives. Place it in the same folder as `EmperorReborn.exe` and `EmperorHooks.dll`.
+**Is there a GOG or Steam version?**
+No. EA never released one. Original CDs (or your own backup images) only.
 
-### Is Emperor Reborn safe and legal to use?
+**Is multiplayer Westwood Online?**
+No, that shut down. This is direct IP, with hostname and DDNS support so you do not have to
+memorise addresses.
 
-Emperor Reborn is open-source software released under a permissive license. The source code is fully auditable on GitHub. It is an unofficial fan-made preservation tool, not affiliated with Electronic Arts or Westwood Studios. It does not redistribute any copyrighted game content.
+**Does this change the game?**
+No. Same 2001 game, original resolutions. I am not remastering anything, just getting it to run.
 
-### What is the difference between Emperor Reborn and a remaster?
+**Is the binary safe?**
+Source is on GitHub, build it yourself if you would rather. Each release has SHA256 hashes. Windows
+SmartScreen will warn about an unsigned exe from an unknown publisher, that is normal: More info,
+Run anyway.
 
-Emperor Reborn is a preservation tool, not a remaster. The goal is to play the original 2001 game exactly as it was, just stable on modern hardware. No graphics overhaul, no AI rework, no gameplay changes. Just compatibility and online multiplayer restored.
+## Source
 
-### Will my old saves and campaigns work?
+[github.com/azmawee/EmperorReborn](https://github.com/azmawee/EmperorReborn). MIT-0, same license as
+wheybags' original.
 
-Yes. Emperor Reborn does not modify game data. Your saved games, campaign progress, and settings from the original game work as-is.
+## Legal
 
----
+Not affiliated with EA, Westwood, or wheybags. This is a fan preservation project.
 
-## Troubleshooting Common Issues
+It ships no game files. You bring your own copy and your own EA patch. The launcher patches things
+at runtime, it does not redistribute anything copyrighted. *Emperor: Battle for Dune*, *Dune*,
+Westwood Studios, and the related trademarks belong to their owners.
 
-### Black screen on launch
-
-If you see a black screen when launching the game, check that `EmperorHooks.dll` is in the same folder as `EmperorReborn.exe`. The launcher requires both files to be present. Also verify that the EA v1.09 patch (`EM109EN.EXE`) has been applied to your game installation.
-
-### Mouse cursor stuck or invisible
-
-This usually indicates a focus issue with fullscreen scaling. Alt-Tab out and back into the game once. If the issue persists, try launching at a lower resolution (640x480 or 800x600) through the Emperor Reborn launcher menu.
-
-### Audio crackling or no sound
-
-Modern Windows audio stack can conflict with the original game's audio engine. Try setting the game audio to Software mode in the in-game options. Updating your audio driver to the latest version from your motherboard or sound card vendor often resolves this.
-
-### Multiplayer connection failed
-
-For direct IP multiplayer, ensure the host has forwarded the required UDP ports on their router. For DDNS connections, verify the hostname resolves correctly by running `ping yourhost.duckdns.org` from Command Prompt before attempting to join.
-
-### Game crashes during cutscenes
-
-Cutscene crashes are usually caused by missing or corrupted video files in your game installation. Reinstall the original game from your CDs or installer, then reapply the EA v1.09 patch before running Emperor Reborn.
-
-### Installer says "Windows protected your PC"
-
-Windows SmartScreen flags unsigned executables from unknown publishers. Emperor Reborn is open-source and the source code is verifiable on GitHub. Click "More info" then "Run anyway" to proceed. You can also verify the SHA256 hash of the release zip against the checksum published in the GitHub release notes.
-
----
-
-*Last updated: {{ site.time | date: "%B %Y" }} | Current version: [check releases](https://github.com/azmawee/EmperorReborn/releases/latest)*
-
----
-
-*Emperor Reborn is an unofficial fan-made tool and is not affiliated with, endorsed by, or
-supported by Electronic Arts or Westwood Studios. Emperor: Battle for Dune, Dune, Westwood Studios,
-and all related trademarks are the property of their respective owners.*
+Built on top of [wheybags' patch](https://wheybags.com/blog/emperor.html). His
+[blog post](https://wheybags.com/blog/emperor.html) explains the hard technical parts and is worth
+a read.
