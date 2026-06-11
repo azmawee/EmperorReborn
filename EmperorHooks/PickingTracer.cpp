@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <cmath>
+#include <cstring>
 #include "PickingTracer.hpp"
 #include "InGameHudFix.hpp"
 #include "Log.hpp"
@@ -32,11 +33,13 @@ static const DWORD SCENE_HEIGHT = 0xe0;
 static const DWORD INPUT_MGR_ADDR = 0x00818718;
 static const DWORD MOUSE_VAR_ADDR = INPUT_MGR_ADDR + 0x8160 + 0x14; // 0x82088C, live mouse X (float)
 
-// Game-state flag used to gate the in-game HUD widescreen fix: 0x817c00 is null in the front-end main
-// menu and a valid pointer once a mission is loaded (verified at runtime). The render hook below toggles
-// the fix on/off from this each frame so the front-end menu stays vanilla and only the in-game HUD is
-// patched. See InGameHudFix.hpp.
-static const DWORD MISSION_FLAG_ADDR = 0x00817c00;
+// Game-state flag used to gate the in-game HUD widescreen fix. 0x817c0c is the battlefield sidebar/HUD
+// world object: the sidebar's Open method sets it (0x4b5440) and its teardown clears it (0x4b7284), so
+// it is non-null ONLY on the actual battlefield and 0 everywhere else - the front-end menu, the campaign
+// conquest/star-map, and the Mentat briefing. (The older 0x817c00 mission-world pointer stays set through
+// the post-mission conquest map, which wrongly patched those screens.) The render hook toggles the fix
+// from this each frame so only the in-game HUD is patched. See InGameHudFix.hpp.
+static const DWORD MISSION_FLAG_ADDR = 0x00817c0c;
 
 static volatile DWORD g_renderThreadId = 0;
 static PVOID g_veh = nullptr;
@@ -48,23 +51,27 @@ static int g_scaleMode = 3;
 // re-multiplied by 0.75 every frame until it collapses toward 0 and the screen goes black. Keying the
 // record by object pointer keeps the two independent.
 struct DistMark { DWORD obj; float scaled; };
-static DistMark g_camMarks[8] = {};
-static DistMark g_sceneMarks[8] = {};
+// Big enough to hold every camera/scene object a session touches (main menu, conquest map, briefing,
+// battlefield, the EVA alert preview, minimap, ...) so a long-lived object like the menu camera is
+// never evicted and re-scaled.
+static const int kDistMarks = 32;
+static DistMark g_camMarks[kDistMarks] = {};
+static DistMark g_sceneMarks[kDistMarks] = {};
 
 static bool needScale(DistMark* marks, DWORD obj, float cur)
 {
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < kDistMarks; i++)
     if (marks[i].obj == obj)
       return fabsf(cur - marks[i].scaled) > 0.01f; // false = it is still our scaled value, leave it
   return true; // first time we have seen this object
 }
 static void markScaled(DistMark* marks, DWORD obj, float scaled)
 {
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < kDistMarks; i++)
     if (marks[i].obj == obj) { marks[i].scaled = scaled; return; }
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < kDistMarks; i++)
     if (marks[i].obj == 0) { marks[i].obj = obj; marks[i].scaled = scaled; return; }
-  marks[0].obj = obj; marks[0].scaled = scaled; // cache full, recycle a slot
+  marks[0].obj = obj; marks[0].scaled = scaled; // cache full (very unlikely), recycle a slot
 }
 
 #if WIDESCREEN_ANY_DIAGNOSTIC
@@ -108,65 +115,58 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
 #endif
 
 #if !WIDESCREEN_CURSOR_DIAGNOSTIC
-  // Dr1 = a WRITE to 0x817c00 (the mission pointer) just happened. Toggle the patch IMMEDIATELY, in
-  // game-logic, so it is removed the instant a mission ends - before the menu re-creates its hit-rects
-  // (which would otherwise cache the patched/offset layout). Catches both set (mission) and clear (menu).
-  if (c->Dr6 & 0x2)
+  // Our two breakpoints: Dr0 = execute BP at the render hook (0x41ffe5; edi=camera, ebx=scene),
+  // Dr1 = write data BP on the mission pointer 0x817c00. Handle both in ONE entry so a frame where
+  // they coincide never runs the dist-scale with the wrong registers or skips a frame entirely.
+  if (c->Dr6 & 0x3)
   {
     c->Dr6 = 0;
-    hudFixSetState(*(volatile DWORD*)MISSION_FLAG_ADDR != 0);
-    return EXCEPTION_CONTINUE_EXECUTION;
-  }
 
-  if (c->Dr6 & 0x1)
-  {
-    c->Dr6 = 0;
-    // Per-frame backup of the same toggle (idempotent), in case the data BP is ever missed.
-    hudFixSetState(*(volatile DWORD*)MISSION_FLAG_ADDR != 0);
-    DWORD camera = c->Edi;
-    DWORD scene = c->Ebx;
+    // Keep the in-game HUD patch in sync with the mission flag (idempotent). The Dr1 write BP catches
+    // the exact instant it flips - before the menu re-creates its hit-rects; the render BP is a
+    // per-frame backup. NOTE: do NOT clear the per-object dist marks on a transition - the menu camera
+    // is the SAME object across a mission, and clearing its record makes us re-scale its already-scaled
+    // dist (double-scale -> the menu zooms in and its buttons mis-click after you have played a mission).
+    bool inMission = *(volatile DWORD*)MISSION_FLAG_ADDR != 0;
+    hudFixSetState(inMission);
 
-    if (camera && scene && !IsBadReadPtr((void*)(scene + SCENE_HEIGHT), 4))
+    // Only scale at the render BP, where edi/ebx are the camera/scene. When Dr1 fired instead, EIP is
+    // at the 0x817c00 writer and those registers are meaningless.
+    if (c->Eip == HOOK_EIP)
     {
-      int w = *(int*)(scene + SCENE_WIDTH);
-      int h = *(int*)(scene + SCENE_HEIGHT);
-      if (w > 0 && h > 0)
+      DWORD camera = c->Edi;
+      DWORD scene = c->Ebx;
+      if (camera && scene && !IsBadReadPtr((void*)(scene + SCENE_HEIGHT), 4))
       {
-        float aspect = float(w) / float(h);
-        if (aspect > 1.34f)
+        int w = *(int*)(scene + SCENE_WIDTH);
+        int h = *(int*)(scene + SCENE_HEIGHT);
+        if (w > 0 && h > 0)
         {
-#if WIDESCREEN_DIST_DIAGNOSTIC
-          DWORD distAddr = scene + SCENE_DIST;
-          if (g_dataBpAddr != distAddr)
+          float aspect = float(w) / float(h);
+          if (aspect > 1.34f)
           {
-            g_dataBpAddr = distAddr;
-            c->Dr1 = distAddr;
-            c->Dr7 |= (1u << 2) | (0b11u << 20) | (0b11u << 22); // Dr1: L1, read+write, 4 bytes
-            Log("DIAG: data BP armed on scene+0xE4 = %08X\n", distAddr);
-          }
-#else
-          float invS = (4.0f / 3.0f) / aspect;
-          if (g_scaleMode & 1)
-          {
-            float* cd = (float*)(camera + CAMERA_DIST);
-            if (needScale(g_camMarks, camera, *cd)) { *cd *= invS; markScaled(g_camMarks, camera, *cd); }
-          }
-          if (g_scaleMode & 2)
-          {
-            float* sd = (float*)(scene + SCENE_DIST);
-            if (needScale(g_sceneMarks, scene, *sd))
+            float invS = (4.0f / 3.0f) / aspect;
+            if (g_scaleMode & 1)
             {
-              *sd *= invS;
-              if (*sd != 0.0f) *(float*)(scene + SCENE_INVDIST) = 1.0f / *sd;
-              markScaled(g_sceneMarks, scene, *sd);
+              float* cd = (float*)(camera + CAMERA_DIST);
+              if (needScale(g_camMarks, camera, *cd)) { *cd *= invS; markScaled(g_camMarks, camera, *cd); }
+            }
+            if (g_scaleMode & 2)
+            {
+              float* sd = (float*)(scene + SCENE_DIST);
+              if (needScale(g_sceneMarks, scene, *sd))
+              {
+                *sd *= invS;
+                if (*sd != 0.0f) *(float*)(scene + SCENE_INVDIST) = 1.0f / *sd;
+                markScaled(g_sceneMarks, scene, *sd);
+              }
             }
           }
-#endif
         }
       }
+      c->EFlags |= 0x10000; // Resume Flag: step past HOOK_EIP without re-triggering
     }
 
-    c->EFlags |= 0x10000; // Resume Flag: step past HOOK_EIP without re-triggering
     return EXCEPTION_CONTINUE_EXECUTION;
   }
 #endif
@@ -184,8 +184,11 @@ static void setExecuteBp(DWORD tid, DWORD eip)
   if (GetThreadContext(h, &ctx))
   {
     ctx.Dr0 = eip;                  // execute BP: render hook (dist-scale + backup patch toggle)
-    ctx.Dr1 = MISSION_FLAG_ADDR;    // write data BP on 0x817c00: toggle patch the instant mission state flips
-    // Dr7: L0 (execute Dr0) + L1 (Dr1) + Dr1 R/W=01(write) at bits 20-21 + Dr1 LEN=11(4 bytes) at 22-23.
+    ctx.Dr1 = MISSION_FLAG_ADDR;    // write data BP on 0x817c0c: toggle patch the instant battlefield state flips
+    // NOTE: Dr2/Dr3 on the star-map unproject (sub_41f520/41f760) are OFF - the main menu also calls
+    // sub_41f520, so BPing it regressed the menu pick, and the diag proved the mouse is already in REAL
+    // pixels (reaches ~1269 on a 1280 screen), so the conquest/briefing offset is NOT a mouse-units issue.
+    // Dr7: L0 (Dr0 exec) + L1 (Dr1) + Dr1 R/W=01(write) bits 20-21 + Dr1 LEN=11 bits 22-23.
     ctx.Dr7 = 0x1 | 0x4 | (0b01u << 20) | (0b11u << 22);
     ctx.Dr6 = 0;
     ctx.ContextFlags = CONTEXT_DEBUG_REGISTERS;
