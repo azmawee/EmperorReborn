@@ -82,19 +82,26 @@ LRESULT __stdcall backgroundWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
 {
   if (Msg == WM_ACTIVATEAPP)
   {
-    Log("GOT WM_ACTIVATEAPP %d\n", wParam);
-    // Keep the borderless fullscreen window above an always-on-top third-party taskbar
-    // (Start11, ExplorerPatcher, etc.) while we have focus, but drop topmost when we lose
-    // focus so the user can still alt-tab away to other windows cleanly.
-    SetWindowPos(hWnd, wParam ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-  }
+    // Only react when the activation state actually changes. During a fullscreen device reset (e.g.
+    // aborting a mission) the topmost/focus dance against an always-on-top taskbar (Start11,
+    // ExplorerPatcher) can spam duplicate WM_ACTIVATEAPP 0 events and spin into a focus loop that
+    // hangs the game. Ignoring duplicates breaks that loop while a real change (alt-tab, 0<->1) still
+    // gets handled.
+    static int lastActivate = -1;
+    if ((int)wParam == lastActivate)
+      return DefWindowProcA(hWnd, Msg, wParam, lParam);
+    lastActivate = (int)wParam;
 
-  // we need to forward these events to the game window or input gets screwy, see comment in wndProcDuneIIIPatched()
-  if (mainWindowHandle && Msg == WM_ACTIVATEAPP)
-  {
-    SetFocus(mainWindowHandle);
-    Log("FORWARD WM_ACTIVATEAPP %d\n", wParam);
-    SendMessageA(mainWindowHandle, Msg, wParam, lParam);
+    // Keep the borderless fullscreen window above an always-on-top third-party taskbar while we have
+    // focus, but drop topmost when we lose focus so the user can still alt-tab away cleanly.
+    SetWindowPos(hWnd, wParam ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+    // Forward to the game window or input gets screwy (see comment in wndProcDuneIIIPatched()).
+    if (mainWindowHandle)
+    {
+      SetFocus(mainWindowHandle);
+      SendMessageA(mainWindowHandle, Msg, wParam, lParam);
+    }
   }
 
   return DefWindowProcA(hWnd, Msg, wParam, lParam);
