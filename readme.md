@@ -6,6 +6,8 @@ A launcher I wrote to play *Emperor: Battle for Dune* (Westwood, 2001) on Window
 ![License](https://img.shields.io/badge/license-MIT--0-green)
 ![Build](https://img.shields.io/badge/build-Visual%20Studio%202022%20%7C%20x86-5C2D91?logo=visualstudio)
 
+![Emperor: Battle for Dune running in 16:9 widescreen](screenshots/gameplay-2.png)
+
 I wanted to play Emperor again and ran into the usual problems with a 25-year-old game on modern
 Windows: the installer fights the OS, and even once it runs the game sits in a small box in the
 middle of the monitor. Multiplayer has been dead since Westwood Online shut down.

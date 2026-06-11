@@ -1,12 +1,14 @@
 ---
 title: "Emperor Reborn - Emperor: Battle for Dune with true widescreen on Windows 10/11"
 description: "Play Emperor: Battle for Dune on Windows 10 and 11 with real 16:9 widescreen, fullscreen, original resolutions, and multiplayer over direct IP or DDNS."
-image: /screenshots/gameplay-windows11.png
+image: /screenshots/gameplay-2.png
 ---
 
 # Emperor Reborn
 
-A launcher I wrote to play *Emperor: Battle for Dune* on modern Windows.
+A launcher I wrote to play *Emperor: Battle for Dune* on modern Windows, now with real 16:9 widescreen.
+
+![Emperor: Battle for Dune running in 16:9 widescreen]({{ "/screenshots/gameplay-2.png" | relative_url }})
 
 [**Download the latest release**](https://github.com/azmawee/EmperorReborn/releases/latest)
 &nbsp;|&nbsp;
@@ -33,6 +35,8 @@ widens the view: pick a 16:9 resolution and the battlefield renders at the real 
 stretching, no black bars. The harder half was the interface, and it is done too: the in-game
 sidebar, the cursor, edge scrolling and the menus all sit where they should at 16:9. As far as I can
 tell nobody had pulled off real widescreen on this game in the 25 years since it came out.
+
+![The main menu in 16:9 widescreen]({{ "/screenshots/menu.png" | relative_url }})
 
 **Fullscreen scaling.** Pick a resolution and it fills the monitor instead of pillarboxing. On a 4K
 screen the game looks like a real fullscreen game again instead of a postage stamp.

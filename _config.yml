@@ -1,8 +1,8 @@
 title: "Emperor Reborn"
 description: >-
-  A launcher for Emperor: Battle for Dune on Windows 10 and 11. Fullscreen
-  scaling, original resolutions, and multiplayer over direct IP or DDNS. Open
-  source, MIT-0, forked from wheybags' patch.
+  A launcher for Emperor: Battle for Dune on Windows 10 and 11. Real 16:9
+  widescreen, fullscreen scaling, original resolutions, and multiplayer over
+  direct IP or DDNS. Open source, MIT-0, forked from wheybags' patch.
 theme: jekyll-theme-cayman
 plugins:
   - jekyll-seo-tag
