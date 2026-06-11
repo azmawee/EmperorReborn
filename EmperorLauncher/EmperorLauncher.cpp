@@ -195,17 +195,23 @@ int getMainMonitorHeight()
 
 
 
-// Selectable game resolutions. The fixed ones are all 4:3 because lots of stuff in the game
-// assumes that ratio. Width/height of 0 is a special "match the desktop" entry (the old behaviour:
-// sharpest image / fills the screen natively, but the in-game fonts get small on big monitors).
-struct Resolution { int width; int height; const wchar_t* label; };
+// Selectable game resolutions. The 4:3 ones are the original ratio the game was built around.
+// The "(widescreen)" ones are 16:9: picking one turns on the widescreen projection fix in the
+// hooks so the battlefield renders properly wide instead of stretched. Width/height of 0 is a
+// special "match the desktop" entry (the old behaviour: sharpest / fills the screen natively, but
+// the in-game fonts get small on big monitors).
+struct Resolution { int width; int height; bool widescreen; const wchar_t* label; };
 const Resolution resolutions[] =
 {
-  { 640, 480, L"640 x 480" },
-  { 800, 600, L"800 x 600" },
-  { 1024, 768, L"1024 x 768" },
-  { 1152, 864, L"1152 x 864" },
-  { 0, 0, L"Desktop" },
+  { 640, 480, false, L"640 x 480" },
+  { 800, 600, false, L"800 x 600" },
+  { 1024, 768, false, L"1024 x 768" },
+  { 1152, 864, false, L"1152 x 864" },
+  { 1280, 720, true, L"1280 x 720 (widescreen)" },
+  { 1600, 900, true, L"1600 x 900 (widescreen)" },
+  { 1920, 1080, true, L"1920 x 1080 (widescreen)" },
+  { 2560, 1440, true, L"2560 x 1440 (widescreen)" },
+  { 0, 0, false, L"Desktop" },
 };
 
 
@@ -249,7 +255,7 @@ void loadAndApplySettings()
 
   SendMessageA(fullscreenCheckbox, BM_SETCHECK, settings.fullscreen ? BST_CHECKED : BST_UNCHECKED, 0);
 
-  int resolutionIndex = 1; // default to 800x600 if the saved value isn't in the list
+  int resolutionIndex = 4; // default to 1280x720 (lowest widescreen) if the saved value isn't in the list
   for (int i = 0; i < int(std::size(resolutions)); i++)
   {
     if (resolutions[i].width == settings.screenWidth && resolutions[i].height == settings.screenHeight)
@@ -294,6 +300,7 @@ LRESULT onResolutionChanged(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
   {
     settings.screenWidth = resolutions[index].width;
     settings.screenHeight = resolutions[index].height;
+    settings.widescreen = resolutions[index].widescreen;
     settings.writeSettings();
   }
   return CallWindowProc(defWndProc, hwnd, message, wParam, lParam);
@@ -483,9 +490,11 @@ int wmain(int argc, wchar_t* argv[])
 
     CreateWindowEx(0, WC_STATIC, L"Resolution", WS_CHILD | WS_VISIBLE, x, y + 4, 80, 24, window, nullptr, nullptr, nullptr);
     // The height here also controls how tall the drop-down list is, so make it big enough for all entries.
-    resolutionCombo = CreateWindowEx(0, WC_COMBOBOX, nullptr, WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL, x + 90, y, 130, 200, window, nullptr, nullptr, nullptr);
+    resolutionCombo = CreateWindowEx(0, WC_COMBOBOX, nullptr, WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL, x + 90, y, 200, 240, window, nullptr, nullptr, nullptr);
     for (const Resolution& res : resolutions)
       SendMessageW(resolutionCombo, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(res.label));
+    // Make the drop-down list itself wider than the box so the longer "(widescreen)" labels are not clipped.
+    SendMessageW(resolutionCombo, CB_SETDROPPEDWIDTH, 230, 0);
     y += ySpace;
     y += ySpace;
 
@@ -539,7 +548,7 @@ int wmain(int argc, wchar_t* argv[])
     int x = 30;
     int y = yMax + 50;
 
-    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn - modified by azmawee (click a link to open):", WS_CHILD | WS_VISIBLE, x, y, 480, 20, window, nullptr, nullptr, nullptr);
+    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn - modified by azmawee", WS_CHILD | WS_VISIBLE, x, y, 480, 20, window, nullptr, nullptr, nullptr);
     y += 24;
 
     githubLink = CreateWindowEx(0, WC_STATIC, L"GitHub:   github.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);

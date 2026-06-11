@@ -17,17 +17,24 @@ edit the registry by hand.
 
 ## What this adds on top of wheybags' patch
 
+- **True widescreen (16:9).** The headline feature. Every other way of running Emperor wide either
+  stretches it fat or crops the top and bottom off. This widens the actual view instead: the
+  battlefield renders at the real aspect with no stretching, and the harder half (sidebar, cursor,
+  edge scroll and menus) lines up correctly too. As far as I can tell it is the first real widescreen
+  for this game in the 25 years since release.
 - **Fullscreen scaling.** Your chosen resolution fills the whole monitor instead of pillarboxing.
-  4:3 aspect kept, no stretching. This is the main reason I built it: on a 4K screen the original
-  resolutions are unusably tiny otherwise.
-- **Resolution dropdown.** 640x480, 800x600, 1024x768, 1152x864, or match-desktop. Saved between
+  On a 4K screen the original resolutions are unusably tiny otherwise.
+- **Resolution dropdown.** 16:9 widescreen (1280x720, 1600x900, 1920x1080, 2560x1440) or the
+  original 4:3 modes (640x480 up to 1152x864), or match-desktop. Defaults to 1280x720. Saved between
   runs.
 - **Hostname / DDNS in multiplayer.** Connect to `something.duckdns.org` instead of a raw IP, which
   is handy when the host's home IP keeps changing.
 - **Single exe, no VC++ Redist.** C runtime linked statically.
 - **Builds its own clean copy** of the game from your discs. It does not touch any existing install.
 
-It is still the original 2001 game at its original resolutions. This is preservation, not a remaster.
+It is still the original 2001 game with all its original content. The one real change is optional
+widescreen; leave it on a 4:3 resolution and it runs exactly like it always did. Preservation, not a
+remaster.
 
 ## Install
 
@@ -50,15 +57,17 @@ sharper with smaller UI.
 
 | Resolution | Notes |
 |---|---|
-| `640 x 480` | Biggest, most readable |
-| `800 x 600` | Default, good balance |
-| `1024 x 768` | Sharper, slightly smaller UI |
-| `1152 x 864` | Sharpest 4:3 option |
+| `1280 x 720` | Widescreen, default, readable text |
+| `1600 x 900` | Widescreen, sharper |
+| `1920 x 1080` | Widescreen, sharp, smaller UI |
+| `2560 x 1440` | Widescreen, sharpest |
+| `640 x 480` to `1152 x 864` | Original 4:3 modes |
 | Desktop (match screen) | Native sharpness, but the UI gets small on 4K |
 
-On a 4K monitor, skip "Desktop" and use 1024x768 or 800x600 with Fullscreen ticked. If the image
-still sits centered in a small box, your GPU is set to "no scaling": switch it to Full-screen in
-the NVIDIA Control Panel (*Adjust desktop size and position*), or the AMD/Intel equivalent.
+On a 4K monitor, skip "Desktop" and use 1280x720 widescreen (or 1920x1080 if you want it sharper)
+with Fullscreen ticked. If the image still sits centered in a small box, your GPU is set to "no
+scaling": switch it to Full-screen in the NVIDIA Control Panel (*Adjust desktop size and position*),
+or the AMD/Intel equivalent.
 
 ## Multiplayer
 
@@ -93,11 +102,27 @@ same folder. The exe links the C runtime statically, so no VC++ Redist on the pl
 To package a redistributable zip (no copyrighted EA content):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\package.ps1 -Version 1.0
+powershell -ExecutionPolicy Bypass -File .\package.ps1 -Version 2.0
 ```
 
 wheybags wrote a good [blog post](https://wheybags.com/blog/emperor.html) on the technical details
 of the original patch.
+
+## If something's off
+
+- **Already have a working install (wheybags' version, or an old one)?** You can drop
+  `EmperorReborn.exe` and `EmperorHooks.dll` straight into that folder and run. If the game files
+  are already compatible it skips the disc step and goes to the launcher. People have reported this
+  working over an existing install with no reinstall.
+- **Windows Security flags it.** It does that with unsigned exes. Add the install folder as an
+  exclusion in Windows Security, or hit More info then Run anyway. Source is on GitHub if you would
+  rather build it.
+- **Image sits in a black box in fullscreen.** That is the GPU upscaler set to "no scaling". Fix it
+  in the GPU control panel:
+  - NVIDIA: Adjust desktop size and position, Scaling: Full-screen.
+  - AMD, including handhelds like the ROG/Xbox Ally: turn off GPU scaling and set scaling mode to
+    preserve aspect ratio.
+  - On a 1080p screen, 1024x768 fullscreen looks good.
 
 ## Credits and license
 

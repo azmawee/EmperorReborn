@@ -138,6 +138,8 @@ nmake</Command>
     <ClCompile Include="PatchDebugLog.cpp" />
     <ClCompile Include="PatchRegistry.cpp" />
     <ClCompile Include="PatchWindowManagement.cpp" />
+    <ClCompile Include="PickingTracer.cpp" />
+    <ClCompile Include="InGameHudFix.cpp" />
     <ClCompile Include="ResolveHost.cpp" />
     <ClCompile Include="WolIrcServer.cpp" />
     <ClCompile Include="WolProxyBase.cpp" />

@@ -17,10 +17,15 @@ public:
   bool forceCursorVisible = false;
   bool disableCursorCapture = false;
 
-  // Custom game resolution. Defaults to 800x600 so the UI / fonts stay readable
-  // instead of being locked to the (often very high) desktop resolution.
-  int screenWidth = 800;
-  int screenHeight = 600;
+  // Custom game resolution. Defaults to the lowest widescreen mode (1280x720) so the game
+  // looks right out of the box on a modern display without the fonts getting tiny.
+  int screenWidth = 1280;
+  int screenHeight = 720;
+
+  // Proper widescreen: correct the 3D projection so the battlefield renders at the real
+  // screen aspect instead of stretching the original 4:3 image. On by default now that the
+  // in-game HUD and menus line up properly at 16:9.
+  bool widescreen = true;
 
 public:
   void readSettings()
@@ -68,6 +73,10 @@ public:
       catch (...) {}
     }
 
+    std::optional<std::string> widescreenTemp = regReadString(key, "Widescreen");
+    if (widescreenTemp)
+      widescreen = *widescreenTemp == "1";
+
     RegCloseKey(key);
   }
 
@@ -85,6 +94,7 @@ public:
     regWriteString(key, "DisableCursorCapture", disableCursorCapture ? "1" : "0");
     regWriteString(key, "ScreenWidth", std::to_string(screenWidth));
     regWriteString(key, "ScreenHeight", std::to_string(screenHeight));
+    regWriteString(key, "Widescreen", widescreen ? "1" : "0");
 
     RegCloseKey(key);
   }
