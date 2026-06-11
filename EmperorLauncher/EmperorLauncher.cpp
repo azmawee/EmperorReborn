@@ -185,12 +185,12 @@ int getMainMonitorHeight()
 
   const POINT ptZero = { 0, 0 };
   HMONITOR monitor = MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
-  MONITORINFO info;
+  MONITORINFO info = {};
   info.cbSize = sizeof(MONITORINFO);
-  GetMonitorInfo(monitor, &info);
-  return info.rcMonitor.bottom - info.rcMonitor.top;
+  if (monitor && GetMonitorInfo(monitor, &info))
+    return info.rcMonitor.bottom - info.rcMonitor.top;
 
-  SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_UNAWARE);
+  return GetSystemMetrics(SM_CYSCREEN); // fallback if the monitor query fails
 }
 
 
