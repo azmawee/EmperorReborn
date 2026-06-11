@@ -41,8 +41,31 @@ static const DWORD MISSION_FLAG_ADDR = 0x00817c00;
 static volatile DWORD g_renderThreadId = 0;
 static PVOID g_veh = nullptr;
 static int g_scaleMode = 3;
-static float g_lastCamDist = 0.0f;
-static float g_lastSceneDist = 0.0f;
+
+// Per-object record of the last dist value WE wrote, so we never re-scale our own output. A single
+// "last value" global breaks when two scenes render each frame (the main view + the small EVA "enemy
+// attack" alert preview): their dists interleave, the change-check keeps firing, and the value gets
+// re-multiplied by 0.75 every frame until it collapses toward 0 and the screen goes black. Keying the
+// record by object pointer keeps the two independent.
+struct DistMark { DWORD obj; float scaled; };
+static DistMark g_camMarks[8] = {};
+static DistMark g_sceneMarks[8] = {};
+
+static bool needScale(DistMark* marks, DWORD obj, float cur)
+{
+  for (int i = 0; i < 8; i++)
+    if (marks[i].obj == obj)
+      return fabsf(cur - marks[i].scaled) > 0.01f; // false = it is still our scaled value, leave it
+  return true; // first time we have seen this object
+}
+static void markScaled(DistMark* marks, DWORD obj, float scaled)
+{
+  for (int i = 0; i < 8; i++)
+    if (marks[i].obj == obj) { marks[i].scaled = scaled; return; }
+  for (int i = 0; i < 8; i++)
+    if (marks[i].obj == 0) { marks[i].obj = obj; marks[i].scaled = scaled; return; }
+  marks[0].obj = obj; marks[0].scaled = scaled; // cache full, recycle a slot
+}
 
 #if WIDESCREEN_ANY_DIAGNOSTIC
 static DWORD g_dataBpAddr = 0;
@@ -126,16 +149,16 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
           if (g_scaleMode & 1)
           {
             float* cd = (float*)(camera + CAMERA_DIST);
-            if (fabsf(*cd - g_lastCamDist) > 0.01f) { *cd *= invS; g_lastCamDist = *cd; }
+            if (needScale(g_camMarks, camera, *cd)) { *cd *= invS; markScaled(g_camMarks, camera, *cd); }
           }
           if (g_scaleMode & 2)
           {
             float* sd = (float*)(scene + SCENE_DIST);
-            if (fabsf(*sd - g_lastSceneDist) > 0.01f)
+            if (needScale(g_sceneMarks, scene, *sd))
             {
               *sd *= invS;
               if (*sd != 0.0f) *(float*)(scene + SCENE_INVDIST) = 1.0f / *sd;
-              g_lastSceneDist = *sd;
+              markScaled(g_sceneMarks, scene, *sd);
             }
           }
 #endif
