@@ -83,6 +83,10 @@ LRESULT __stdcall backgroundWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
   if (Msg == WM_ACTIVATEAPP)
   {
     Log("GOT WM_ACTIVATEAPP %d\n", wParam);
+    // Keep the borderless fullscreen window above an always-on-top third-party taskbar
+    // (Start11, ExplorerPatcher, etc.) while we have focus, but drop topmost when we lose
+    // focus so the user can still alt-tab away to other windows cleanly.
+    SetWindowPos(hWnd, wParam ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
   }
 
   // we need to forward these events to the game window or input gets screwy, see comment in wndProcDuneIIIPatched()
@@ -125,6 +129,11 @@ void createBackgroundWindow()
   );
 
   ShowWindow(temp, SW_MAXIMIZE);
+
+  // Cover the entire monitor and sit above the taskbar. Some third-party taskbars (Start11,
+  // ExplorerPatcher, etc.) force themselves always-on-top and would otherwise draw over our
+  // borderless fullscreen window. backgroundWndProc drops topmost again on focus loss.
+  SetWindowPos(temp, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
 
   HBRUSH black = CreateSolidBrush(RGB(0, 0, 0));
   SetClassLongPtrA(temp, GCLP_HBRBACKGROUND, (LONG_PTR)black);

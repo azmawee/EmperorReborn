@@ -21,6 +21,7 @@ exclude:
   - promo-drafts.md
   - RELEASE-NOTES-TEMPLATE.md
   - WIDESCREEN-NOTES.md
+  - dev-notes/
   - package.ps1
   - "*.sln"
   - "*.vcxproj"

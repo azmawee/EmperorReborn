@@ -413,3 +413,19 @@ EM109EN.DLL
 
 # Packaged release output (attach to GitHub Releases instead of committing)
 /dist/
+
+# Build artifacts copied to repo root for local testing (run alongside data/).
+/EmperorReborn.exe
+/EmperorHooks.dll
+
+# In-game HUD widescreen edit bytes (reverse-engineered game-patch data) - not redistributed here,
+# same as EM109EN.EXE. The header (InGameHudFix.hpp) is enough to build against; the prebuilt release
+# ships it compiled in.
+EmperorHooks/InGameHudFix.cpp
+
+# Local reverse-engineering scratch space (downloads, extracted binaries, throwaway scripts).
+/_scratch/
+
+# Reverse-engineering dev notes (internal, contain third-party code excerpts).
+/WIDESCREEN-NOTES.md
+/dev-notes/

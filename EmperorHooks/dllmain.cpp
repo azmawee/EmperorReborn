@@ -7,6 +7,8 @@
 #include "PatchDebugLog.hpp"
 #include "PatchRegistry.hpp"
 #include "PatchWindowManagement.hpp"
+#include "PickingTracer.hpp"
+#include "InGameHudFix.hpp"
 #include "WrapWinsock.hpp"
 #include "Log.hpp"
 #include "PatchWol.hpp"
@@ -84,11 +86,20 @@ void runHooks()
   DetourTransactionCommit();
 
   patchDebugLog();
-  HookD3D7();
+  HookD3D7(settings.widescreen, settings.screenWidth, settings.screenHeight);
   patchCdCheck();
   patchRedirectRegistry();
   patchD3D7ResolutionLimit();
   patchWindowManagement(settings.fullscreen, !settings.disableCursorCapture, settings.screenWidth, settings.screenHeight);
+
+  // In-game 2D HUD/sidebar widescreen fix, applied to the loaded image. Capture the vanilla bytes now;
+  // it is toggled on ONLY while in a mission (see PickingTracer) so the front-end menu stays
+  // vanilla/correct. The Hor+ camera dist-scale also starts here.
+  if (settings.widescreen)
+  {
+    initHudFix();
+    startPickingTracer();
+  }
 
   //wrapWinsockWithLogging();
 
