@@ -38,6 +38,10 @@ tell nobody had pulled off real widescreen on this game in the 25 years since it
 
 ![The main menu in 16:9 widescreen]({{ "/screenshots/menu.png" | relative_url }})
 
+![Another menu view in widescreen]({{ "/screenshots/menu-2.png" | relative_url }})
+
+![A bigger battle in widescreen]({{ "/screenshots/gameplay-3.png" | relative_url }})
+
 **Fullscreen scaling.** Pick a resolution and it fills the monitor instead of pillarboxing. On a 4K
 screen the game looks like a real fullscreen game again instead of a postage stamp.
 
@@ -68,6 +72,8 @@ Then:
    Harkonnen, Ordos) and builds its own clean copy of the game. It does not touch or need an
    existing install.
 3. Pick a resolution, tick Fullscreen, hit Play.
+
+![The launcher]({{ "/screenshots/launcher-ui.png" | relative_url }})
 
 First-run setup is a one-time thing. After that it goes straight to the launcher. Full step by step
 is in the [install guide](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt).
