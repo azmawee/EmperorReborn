@@ -44,7 +44,8 @@ jobs:
 
       - name: Build and package
         shell: pwsh
-        run: .\package.ps1 -Version $env:VERSION
+        # windows-latest ships the v143 toolset; the dev machine uses a newer one, so override here.
+        run: .\package.ps1 -Version $env:VERSION -PlatformToolset v143
 
       - name: Check the zip only contains files we are allowed to ship
         shell: pwsh

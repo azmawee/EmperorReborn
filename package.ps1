@@ -22,7 +22,10 @@
 #>
 param(
   [string]$Version = "2.3",
-  [switch]$SkipBuild
+  [switch]$SkipBuild,
+  # Optional toolset override. Local builds leave it empty and use the project's toolset; CI passes a
+  # toolset that exists on the runner (e.g. v143 on windows-latest) since the dev machine uses a newer one.
+  [string]$PlatformToolset = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -46,7 +49,9 @@ function Find-MSBuild {
 if (-not $SkipBuild) {
   $msbuild = Find-MSBuild
   Write-Host "Building with: $msbuild" -ForegroundColor Cyan
-  & $msbuild "EmperorLauncher.sln" /t:Build /p:Configuration=Release /p:Platform=x86 /m /nologo
+  $msbuildArgs = @("EmperorLauncher.sln", "/t:Build", "/p:Configuration=Release", "/p:Platform=x86", "/m", "/nologo")
+  if ($PlatformToolset) { $msbuildArgs += "/p:PlatformToolset=$PlatformToolset" }
+  & $msbuild @msbuildArgs
   if ($LASTEXITCODE -ne 0) { throw "Build failed (exit $LASTEXITCODE)." }
 }
 
