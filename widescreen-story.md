@@ -106,7 +106,7 @@ out from under the buttons. Leaving the distance alone on those screens, while s
 background a different way, puts the clicks right back where the buttons are.
 
 So the fix is two lines that say "do not apply the widescreen scale to the click math on these three
-screens." After weeks of chasing it, that was the whole thing.
+screens." After days of chasing it, that was the whole thing.
 
 ## Why it matters
 
