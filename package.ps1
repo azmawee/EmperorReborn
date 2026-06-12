@@ -21,7 +21,7 @@
   powershell -ExecutionPolicy Bypass -File .\package.ps1 -Version 1.0
 #>
 param(
-  [string]$Version = "1.0",
+  [string]$Version = "2.3",
   [switch]$SkipBuild
 )
 
@@ -85,10 +85,28 @@ Copy-Item (Join-Path $root "license.txt")              $stageDir
 Copy-Item (Join-Path $root "THIRD-PARTY-NOTICES.txt")  $stageDir
 Copy-Item (Join-Path $root "readme.md") (Join-Path $stageDir "README.txt")
 
+# --- checksums of the contents ----------------------------------------------
+# Hash every staged file and write SHA256SUMS.txt INTO the folder so it ships
+# inside the zip - lets players verify the two executables after extracting.
+$sumsPath = Join-Path $stageDir "SHA256SUMS.txt"
+Get-ChildItem $stageDir -File | Sort-Object Name | ForEach-Object {
+  '{0}  {1}' -f (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(), $_.Name
+} | Set-Content -Path $sumsPath -Encoding ascii
+
 # --- zip --------------------------------------------------------------------
 Compress-Archive -Path (Join-Path $stageDir "*") -DestinationPath $zipPath -Force
+
+# --- checksum of the zip itself (the number to publish on the site) ---------
+$zipHash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToLower()
+'{0}  {1}' -f $zipHash, "$stageName.zip" | Set-Content -Path "$zipPath.sha256" -Encoding ascii
+$exeHash = (Get-FileHash (Join-Path $stageDir "EmperorReborn.exe") -Algorithm SHA256).Hash.ToLower()
+$dllHash = (Get-FileHash (Join-Path $stageDir "EmperorHooks.dll")  -Algorithm SHA256).Hash.ToLower()
 
 Write-Host ""
 Write-Host "Packaged: $zipPath" -ForegroundColor Green
 Get-ChildItem $stageDir | Select-Object Name, @{N="KB";E={[math]::Round($_.Length/1KB,1)}} | Format-Table -AutoSize
+Write-Host "SHA256 - publish these on the site and in the release notes:" -ForegroundColor Cyan
+Write-Host ("  zip                {0}" -f $zipHash)
+Write-Host ("  EmperorReborn.exe  {0}" -f $exeHash)
+Write-Host ("  EmperorHooks.dll   {0}" -f $dllHash)
 Write-Host "Reminder: EM109EN.EXE is NOT bundled - end users supply their own." -ForegroundColor Yellow

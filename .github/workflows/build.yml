@@ -1,0 +1,75 @@
+name: build
+
+# Builds Release/x86, packages the redistributable zip with SHA256, checks the artifact only contains
+# the files we are allowed to ship, and checks the version string is consistent across the repo. On a
+# v* tag it also drafts a release with the zip attached. Does not touch the launcher source.
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version is consistent across the repo
+        shell: pwsh
+        run: |
+          function Get-Ver($path, $pattern) {
+            $m = Select-String -Path $path -Pattern $pattern | Select-Object -First 1
+            if (-not $m) { throw "version pattern not found in $path" }
+            return $m.Matches[0].Groups[1].Value
+          }
+          $launcher = Get-Ver 'EmperorLauncher\EmperorLauncher.cpp' 'Emperor Reborn v(\d+\.\d+)'
+          $jsonld   = Get-Ver 'index.md'  '"softwareVersion":\s*"(\d+\.\d+)"'
+          $readme   = Get-Ver 'readme.md' 'EmperorReborn-v(\d+\.\d+)\.zip'
+          $package  = Get-Ver 'package.ps1' '\$Version = "(\d+\.\d+)"'
+          Write-Host "launcher=$launcher jsonld=$jsonld readme=$readme package=$package"
+          $unique = @($launcher, $jsonld, $readme, $package) | Select-Object -Unique
+          if ($unique.Count -ne 1) { throw "version mismatch across files: $($unique -join ', ')" }
+          "VERSION=$launcher" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding ascii
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x86
+
+      - name: Build and package
+        shell: pwsh
+        run: .\package.ps1 -Version $env:VERSION
+
+      - name: Check the zip only contains files we are allowed to ship
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = Get-ChildItem dist\*.zip | Select-Object -First 1
+          $allowed = @('EmperorReborn.exe','EmperorHooks.dll','INSTALL.txt','license.txt','THIRD-PARTY-NOTICES.txt','README.txt','SHA256SUMS.txt')
+          $entries = [System.IO.Compression.ZipFile]::OpenRead($zip.FullName).Entries | ForEach-Object { $_.Name }
+          $bad = $entries | Where-Object { $_ -notin $allowed }
+          if ($bad) { throw "zip contains files outside the allowlist (possible EA patch or game data): $($bad -join ', ')" }
+          Write-Host "artifact ok: $($entries -join ', ')"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EmperorReborn-v${{ env.VERSION }}
+          path: |
+            dist/*.zip
+            dist/*.zip.sha256
+
+      - name: Draft a release on a version tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            dist/*.zip
+            dist/*.zip.sha256
