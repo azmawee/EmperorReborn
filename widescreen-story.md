@@ -57,7 +57,7 @@ was the exact part nobody had labelled.
 
 Emperor runs on Westwood 3D, the same engine as Command and Conquer: Renegade, which EA released the
 source for in early 2025. I cannot copy that code, but I can read it to understand how the engine
-thinks, and the key fact is this: in this engine the rendering and the mouse picking both go through
+thinks, and the key fact is this, in this engine the rendering and the mouse picking both go through
 one shared camera value. They are not independent. Move the one shared thing and they move together.
 
 Emperor's camera does not have a normal field of view setting. It has a focal "distance", and the
@@ -94,12 +94,12 @@ called it on the broken screens, hoping to borrow the game's own fix. It turned 
 display reset and it black screened the game on the spot.
 
 The thing that cracked it was almost stupid. Since the click was off by a clean ratio, there had to
-be a number that cancelled it out. So I wired up a live tuner: two keys that nudge the camera
+be a number that cancelled it out. So I wired up a live tuner, two keys that nudge the camera
 distance on those screens up and down while the game runs, so I could watch the clicks move and dial
 them in by hand. A few taps and the clicks snapped into place. The value it landed on was four
 thirds, dead on.
 
-Four thirds is the exact inverse of the widescreen correction. In plain terms: on these three
+Four thirds is the exact inverse of the widescreen correction. In plain terms, on these three
 screens, the fix I was applying everywhere else was the bug. The interface on the star map draws and
 clicks through that same camera distance, so when I scaled it for the wide look I dragged the clicks
 out from under the buttons. Leaving the distance alone on those screens, while still widening the 3D
