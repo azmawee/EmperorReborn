@@ -641,9 +641,17 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
             // that overlay's projection out of step with its own pick -> a 0.75 = 960/1280 click offset on
             // the territory and the bottom buttons. The live tuner (UNPROJ_TUNER above) settled on factor
             // 4/3, i.e. invS*4/3 = 1.0 at 16:9 = leave scene+0xE4 NATIVE on those screens. The GPU sphere
-            // still rounds via camera+0x8C above, so the look is unchanged. Battle/menu keep scene+0xE4
-            // scaled (their render and picking share it, so scaling both keeps them aligned).
-            if ((g_scaleMode & 2) && !screenNeedsMoroUiFix(g_screenName))
+            // still rounds via camera+0x8C above, so the look is unchanged.
+            //
+            // CRITICAL: gate on the mission flag too, not just the screen name. Entering a mission from the
+            // Mentat leaves g_screenName as "Briefing", so a screen-name-only test wrongly left scene+0xE4
+            // native IN THE BATTLE, which knocked the in-game cursor / unit picking / sidebar off (the
+            // offset grew from screen centre). On the battlefield the mission flag (0x817c0c) is set, so we
+            // always scale there; we only leave scene+0xE4 native on the genuine front-end screens, where
+            // the flag is clear. Battle and menu keep the original scene-dist scaling.
+            bool frontEndNative = screenNeedsMoroUiFix(g_screenName)
+                                  && (*(volatile DWORD*)MISSION_FLAG_ADDR == 0);
+            if ((g_scaleMode & 2) && !frontEndNative)
             {
               float* sd = (float*)(scene + SCENE_DIST);
               if (needScale(g_sceneMarks, scene, *sd))
