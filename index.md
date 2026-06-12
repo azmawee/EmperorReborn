@@ -1,12 +1,30 @@
 ---
-title: "Emperor Reborn - Emperor: Battle for Dune with true widescreen on Windows 10/11"
-description: "Play Emperor: Battle for Dune on Windows 10 and 11 with real 16:9 widescreen, fullscreen, original resolutions, and multiplayer over direct IP or DDNS."
+title: "Emperor: Battle for Dune on Windows 10 and 11 - real widescreen, fullscreen, multiplayer"
+description: "Download Emperor: Battle for Dune for Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling, the original resolutions and direct-IP multiplayer. Free and open source."
 image: /screenshots/gameplay-2.png
 ---
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Emperor Reborn",
+  "alternateName": "Emperor: Battle for Dune widescreen launcher",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "softwareVersion": "2.3",
+  "downloadUrl": "https://github.com/azmawee/EmperorReborn/releases/latest",
+  "url": "https://azmawee.github.io/EmperorReborn/",
+  "author": { "@type": "Person", "name": "azmawee" },
+  "description": "Play Emperor: Battle for Dune on Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling, the original resolutions and direct-IP multiplayer."
+}
+</script>
+
 # Emperor Reborn
 
-A launcher I wrote to play *Emperor: Battle for Dune* on modern Windows, now with real 16:9 widescreen.
+Emperor Reborn is a free, open-source launcher that runs *Emperor: Battle for Dune* (Westwood, 2001) on
+Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling and working multiplayer.
 
 ![Emperor: Battle for Dune running in 16:9 widescreen]({{ "/screenshots/gameplay-2.png" | relative_url }})
 

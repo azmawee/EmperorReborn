@@ -1,6 +1,7 @@
 # Emperor Reborn
 
-A launcher I wrote to play *Emperor: Battle for Dune* (Westwood, 2001) on Windows 10 and 11.
+Emperor Reborn is a free, open-source launcher to play *Emperor: Battle for Dune* (Westwood, 2001) on
+Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling and working multiplayer.
 
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?logo=windows)
 ![License](https://img.shields.io/badge/license-MIT--0-green)
