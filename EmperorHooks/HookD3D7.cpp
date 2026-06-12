@@ -19,8 +19,10 @@ DWORD targetFps = 60;
 // Set by HookD3D7() from the launcher settings. Widescreen itself is done in PickingTracer (camera
 // dist-scale); here we only need the flag so EndScene can hand the render thread to that hook.
 static bool gWidescreen = false;
+static bool gPillarbox = false;          // launcher option: letterbox the 4:3 screens instead of stretching
 static int gScreenWidth = 0;
 static int gScreenHeight = 0;
+static bool gClearedThisFrame = false;   // black-fill the backbuffer once per frame before narrowing
 
 
 // Limit FPS to 60, some effects in the game just don't work at high FPS.
@@ -47,9 +49,70 @@ HRESULT STDMETHODCALLTYPE My_IDirect3DDevice7_EndScene(IDirect3DDevice7* This)
 
   HRESULT result = Real_IDirect3DDevice7_EndScene(This);
 
+  if (gWidescreen)
+    tracerServiceScreenReset(); // end-of-frame: rebuild conquest/briefing 2D UI layout if flagged
+
   QueryPerformanceCounter(&lastFrameTime);
 
+  gClearedThisFrame = false; // next frame may need a fresh black fill for the side bars
+
   return result;
+}
+
+
+// Letterbox the 4:3 front-end screens (campaign star-map, briefing, videos, ...): when PickingTracer
+// flags the frame, force the game's full-screen viewport into a centred 4:3 box so the content keeps its
+// aspect and the sides stay black. The battlefield and main menu are never flagged (they stay widescreen).
+void* OriginalPointer_IDirect3DDevice7_SetViewport = nullptr;
+HRESULT(STDMETHODCALLTYPE* Real_IDirect3DDevice7_SetViewport)(IDirect3DDevice7* This, LPD3DVIEWPORT7 lpViewport) = nullptr;
+HRESULT STDMETHODCALLTYPE My_IDirect3DDevice7_SetViewport(IDirect3DDevice7* This, LPD3DVIEWPORT7 lpViewport)
+{
+  if (gWidescreen && gPillarbox && lpViewport && gScreenHeight > 0
+      && lpViewport->dwWidth == (DWORD)gScreenWidth && tracerPillarboxWanted())
+  {
+    DWORD w43 = (DWORD)(gScreenHeight * 4 / 3);
+    if (w43 < (DWORD)gScreenWidth)
+    {
+      // Paint the whole backbuffer black once this frame so the area outside the 4:3 box reads as bars
+      // instead of stale/garbage pixels (the game only renders inside the narrowed viewport).
+      if (!gClearedThisFrame)
+      {
+        Real_IDirect3DDevice7_SetViewport(This, lpViewport); // full-screen first
+        This->lpVtbl->Clear(This, 0, nullptr, D3DCLEAR_TARGET, 0, 1.0f, 0);
+        gClearedThisFrame = true;
+      }
+      D3DVIEWPORT7 v = *lpViewport;
+      v.dwX = ((DWORD)gScreenWidth - w43) / 2;
+      v.dwY = 0;
+      v.dwWidth = w43;
+      v.dwHeight = (DWORD)gScreenHeight;
+      return Real_IDirect3DDevice7_SetViewport(This, &v);
+    }
+  }
+  return Real_IDirect3DDevice7_SetViewport(This, lpViewport);
+}
+
+
+// On the 4:3 screens the viewport is narrowed to a centred 4:3 box. The game's projection was built for
+// the full 16:9 framebuffer, so without this it gets squashed horizontally into the box (a circle looks
+// like a tall ellipse). Scale the projection's horizontal term by screenW/box4:3W so the 3D fills the box
+// at the right aspect. PickingTracer puts the picking on the same 4:3 basis so clicks stay aligned.
+void* OriginalPointer_IDirect3DDevice7_SetTransform = nullptr;
+HRESULT(STDMETHODCALLTYPE* Real_IDirect3DDevice7_SetTransform)(IDirect3DDevice7* This, D3DTRANSFORMSTATETYPE dtstTransformStateType, LPD3DMATRIX lpD3DMatrix) = nullptr;
+HRESULT STDMETHODCALLTYPE My_IDirect3DDevice7_SetTransform(IDirect3DDevice7* This, D3DTRANSFORMSTATETYPE dtstTransformStateType, LPD3DMATRIX lpD3DMatrix)
+{
+  if (gWidescreen && gPillarbox && lpD3DMatrix && dtstTransformStateType == D3DTRANSFORMSTATE_PROJECTION
+      && gScreenHeight > 0 && tracerPillarboxWanted())
+  {
+    DWORD w43 = (DWORD)(gScreenHeight * 4 / 3);
+    if (w43 > 0 && w43 < (DWORD)gScreenWidth)
+    {
+      D3DMATRIX m = *lpD3DMatrix;
+      m._11 *= (float)gScreenWidth / (float)w43; // un-squash horizontal to fill the centred 4:3 box
+      return Real_IDirect3DDevice7_SetTransform(This, dtstTransformStateType, &m);
+    }
+  }
+  return Real_IDirect3DDevice7_SetTransform(This, dtstTransformStateType, lpD3DMatrix);
 }
 
 
@@ -72,10 +135,17 @@ HRESULT STDMETHODCALLTYPE My_IDirect3D7_CreateDevice(IDirect3D7* This, REFCLSID 
 
     Real_IDirect3DDevice7_EndScene = device->lpVtbl->EndScene;
     OriginalPointer_IDirect3DDevice7_EndScene = device->lpVtbl->EndScene;
+    Real_IDirect3DDevice7_SetViewport = device->lpVtbl->SetViewport;
+    OriginalPointer_IDirect3DDevice7_SetViewport = device->lpVtbl->SetViewport;
+    Real_IDirect3DDevice7_SetTransform = device->lpVtbl->SetTransform;
+    OriginalPointer_IDirect3DDevice7_SetTransform = device->lpVtbl->SetTransform;
 
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
     DetourAttach(&(PVOID&)Real_IDirect3DDevice7_EndScene, My_IDirect3DDevice7_EndScene);
+    // No viewport-narrow / pillarbox: full widescreen everywhere. The 4:3-pinned front-end clicks are
+    // fixed by Moro's 2D-UI patch (PickingTracer), the 3D by the dist-scale. My_SetViewport/SetTransform
+    // stay defined but unattached (tracerPillarboxWanted() is always false now).
     DetourTransactionCommit();
   }
 
@@ -116,9 +186,10 @@ HRESULT WINAPI MyDirectDrawCreateEx(GUID FAR* lpGuid, LPVOID* lplpDD, REFIID iid
 }
 
 
-void HookD3D7(bool widescreen, int screenWidth, int screenHeight)
+void HookD3D7(bool widescreen, bool pillarbox, int screenWidth, int screenHeight)
 {
   gWidescreen = widescreen;
+  gPillarbox = pillarbox;
   gScreenWidth = screenWidth;
   gScreenHeight = screenHeight;
 

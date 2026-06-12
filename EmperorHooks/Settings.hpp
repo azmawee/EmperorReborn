@@ -27,6 +27,11 @@ public:
   // in-game HUD and menus line up properly at 16:9.
   bool widescreen = true;
 
+  // The 4:3 front-end screens (campaign star-map, Mentat briefing, videos). true = letterbox them
+  // into a centred 4:3 box so they keep their aspect (black bars at the sides); false = stretch them
+  // to fill the widescreen. Only matters when widescreen is on. Default keeps the 4:3 bars.
+  bool pillarbox = true;
+
 public:
   void readSettings()
   {
@@ -77,6 +82,10 @@ public:
     if (widescreenTemp)
       widescreen = *widescreenTemp == "1";
 
+    std::optional<std::string> pillarboxTemp = regReadString(key, "Pillarbox");
+    if (pillarboxTemp)
+      pillarbox = *pillarboxTemp == "1";
+
     RegCloseKey(key);
   }
 
@@ -95,6 +104,7 @@ public:
     regWriteString(key, "ScreenWidth", std::to_string(screenWidth));
     regWriteString(key, "ScreenHeight", std::to_string(screenHeight));
     regWriteString(key, "Widescreen", widescreen ? "1" : "0");
+    regWriteString(key, "Pillarbox", pillarbox ? "1" : "0");
 
     RegCloseKey(key);
   }
