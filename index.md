@@ -26,13 +26,32 @@ image: /screenshots/gameplay-2.png
 Emperor Reborn is a free, open-source launcher that runs *Emperor: Battle for Dune* (Westwood, 2001) on
 Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling and working multiplayer.
 
-![Emperor: Battle for Dune running in 16:9 widescreen]({{ "/screenshots/gameplay-2.png" | relative_url }})
+<video controls muted loop playsinline poster="{{ '/screenshots/gameplay-2.png' | relative_url }}" style="width:100%;max-width:960px;height:auto;border-radius:6px;display:block;margin:0 auto">
+  <source src="{{ '/screenshots/widescreen-demo.mp4' | relative_url }}" type="video/mp4">
+  <img src="{{ '/screenshots/gameplay-2.png' | relative_url }}" alt="Emperor: Battle for Dune in 16:9 widescreen, old 4:3 next to real widescreen" style="width:100%;max-width:960px;height:auto" />
+</video>
 
 [**Download the latest release**](https://github.com/azmawee/EmperorReborn/releases/latest)
 &nbsp;|&nbsp;
 [**Source on GitHub**](https://github.com/azmawee/EmperorReborn)
 &nbsp;|&nbsp;
 [**Install guide**](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt)
+
+## Verify your download
+
+Every release is checksummed so you can confirm a download is the real build and not a tampered copy
+with something slipped in. These are the official SHA256 hashes for v2.3, served over HTTPS from this
+site. If a copy you got from anywhere does not match, do not run it.
+
+```
+zip                e7499a26420154359fe642ea518ff3fd685bfdcfec1feb523660ac5152114444
+EmperorReborn.exe  a9aabb251c664b952c4fddebe36d8a29c2497673bf5a8214ad4a47a13a108f46
+EmperorHooks.dll   dd100fd99882363060b57c89a0ad2222c4df15ea4f1a4368e9231f10faa54a5d
+```
+
+Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256`, or with
+`certutil -hashfile EmperorReborn-v2.3.zip SHA256`, and compare it to the line above. The zip also
+carries a `SHA256SUMS.txt` listing the two executables, so you can verify those after extracting.
 
 ## Why this exists
 
@@ -74,8 +93,9 @@ widescreen now. The choice is saved between runs.
 of a raw IP. Home connections rotate their public IP, and I got tired of looking it up and sending
 friends a new number every time. A DDNS name stays put.
 
-**Single exe, no VC++ Redist.** The C runtime is linked in statically. One less thing to install,
-one less thing to break.
+**No VC++ Redistributable needed.** The C runtime is linked in statically, so there is nothing extra to
+install. You run two files, `EmperorReborn.exe` and `EmperorHooks.dll`, plus your own `EM109EN.EXE` on
+first setup.
 
 ## Install
 
@@ -129,8 +149,9 @@ that works is GPU scaling off, scaling mode set to preserve aspect ratio.
 
 ## Tested on
 
-Windows 11, which is what I run it on daily. Windows 10 should be fine too. If you run it somewhere
-else and it works (or it doesn't), open an issue and tell me.
+Tested on Windows 11, which is what I run it on daily. Windows 10 is expected to work but I have not
+verified it myself yet. If you run it on Windows 10 or anywhere else and it works (or it doesn't), open
+an issue and tell me.
 
 ## FAQ
 
@@ -138,7 +159,8 @@ else and it works (or it doesn't), open an issue and tell me.
 Yes, that is what I use. No VM, no compatibility shim.
 
 **Where do I get `EM109EN.EXE`?**
-EA does not host it anymore. Search the filename, it is on the usual patch archives.
+EA does not host it anymore. Search the filename, it is on the usual patch archives. Get it from a
+source you trust.
 
 **Is there a GOG or Steam version?**
 No. EA never released one. Original CDs (or your own backup images) only.
@@ -149,9 +171,11 @@ folder and run; if the game files are compatible it skips the disc step. People 
 existing wheybags install with no reinstall. A fresh setup from discs only happens if it does not
 find a compatible install.
 
-**Windows Security is complaining.**
-Unsigned exe, so it warns. Add the folder as an exclusion in Windows Security, or click More info
-then Run anyway.
+**Windows Security or antivirus is complaining.**
+An unsigned exe trips SmartScreen, and a launcher that injects a DLL into the game can trip antivirus
+heuristics too even though it is clean. Check the download against the SHA256 above first, then click
+More info then Run anyway. Add a Windows Security folder exclusion only as a last resort, if it keeps
+getting quarantined.
 
 **Is multiplayer Westwood Online?**
 No, that shut down. This is direct IP, with hostname and DDNS support so you do not have to

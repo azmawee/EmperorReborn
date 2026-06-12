@@ -32,7 +32,9 @@ edit the registry by hand.
   runs.
 - **Hostname / DDNS in multiplayer.** Connect to `something.duckdns.org` instead of a raw IP, which
   is handy when the host's home IP keeps changing.
-- **Single exe, no VC++ Redist.** C runtime linked statically.
+- **No VC++ Redistributable needed.** The C runtime is linked statically, so there is nothing extra to
+  install. You still run two files, `EmperorReborn.exe` and `EmperorHooks.dll`, plus your own
+  `EM109EN.EXE` on first setup.
 - **Builds its own clean copy** of the game from your discs. It does not touch any existing install.
 
 It is still the original 2001 game with all its original content. The one real change is optional
@@ -43,7 +45,8 @@ remaster.
 
 You provide your own copy of the game (English version) and EA's official v1.09 patch,
 `EM109EN.EXE`. That patch is copyrighted by EA and is not included here; it was a free download and
-is easy to find by searching the filename. No game data is distributed in this repo.
+is easy to find by searching the filename. Get it from a source you trust. No game data is distributed
+in this repo.
 
 1. Put `EmperorReborn.exe`, `EmperorHooks.dll`, and your own `EM109EN.EXE` in the same folder.
 2. Run `EmperorReborn.exe`. First launch asks for each disc in turn (Disc 1 install, then Atreides,
@@ -71,6 +74,21 @@ On a 4K monitor, skip "Desktop" and use 1280x720 widescreen (or 1920x1080 if you
 with Fullscreen ticked. If the image still sits centered in a small box, your GPU is set to "no
 scaling": switch it to Full-screen in the NVIDIA Control Panel (*Adjust desktop size and position*),
 or the AMD/Intel equivalent.
+
+## Verify your download
+
+Every release is checksummed so you can confirm a download is the real one and not a tampered copy with
+something slipped in. The official SHA256 hashes are published on the
+[site](https://azmawee.github.io/EmperorReborn/) and in the release notes. Check the zip in PowerShell
+with
+
+```powershell
+Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256
+```
+
+and compare it to the published hash. The zip also carries a `SHA256SUMS.txt` listing the hashes of the
+two executables, so you can verify those after extracting. If a copy you got from anywhere does not
+match, do not run it.
 
 ## Multiplayer
 
@@ -117,9 +135,11 @@ of the original patch.
   `EmperorReborn.exe` and `EmperorHooks.dll` straight into that folder and run. If the game files
   are already compatible it skips the disc step and goes to the launcher. People have reported this
   working over an existing install with no reinstall.
-- **Windows Security flags it.** It does that with unsigned exes. Add the install folder as an
-  exclusion in Windows Security, or hit More info then Run anyway. Source is on GitHub if you would
-  rather build it.
+- **Windows Security or antivirus flags it.** An unsigned exe trips SmartScreen, and a launcher that
+  injects a DLL into the game can trip antivirus heuristics too even though it is clean. First check the
+  download against the published SHA256 above so you know it is the real build, then click More info
+  then Run anyway. Only add the install folder as a Windows Security exclusion as a last resort, if it
+  keeps getting quarantined. Source is on GitHub if you would rather build it yourself.
 - **Image sits in a black box in fullscreen.** That is the GPU upscaler set to "no scaling". Fix it
   in the GPU control panel:
   - NVIDIA: Adjust desktop size and position, Scaling: Full-screen.
