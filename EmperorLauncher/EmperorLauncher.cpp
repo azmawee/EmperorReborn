@@ -469,7 +469,7 @@ int wmain(int argc, wchar_t* argv[])
 
   // main window
   int width = 550;
-  int height = 520;
+  int height = 550;
   int left = GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2;
   int top = GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2;
   window = CreateWindowEx(0, WC_DIALOG, L"Emperor Reborn", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, left, top, width, height, nullptr, nullptr, nullptr, nullptr);
@@ -496,6 +496,7 @@ int wmain(int argc, wchar_t* argv[])
     // Make the drop-down list itself wider than the box so the longer "(widescreen)" labels are not clipped.
     SendMessageW(resolutionCombo, CB_SETDROPPEDWIDTH, 230, 0);
     y += ySpace;
+
     y += ySpace;
 
     hostGameRadio = CreateWindowEx(0, WC_BUTTON, L"Host game / singleplayer", WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON, x, y, 200, 24, window, nullptr, nullptr, nullptr);
@@ -543,18 +544,21 @@ int wmain(int argc, wchar_t* argv[])
 
   playButton = CreateWindowEx(0, WC_BUTTON, L"Play", WS_CHILD | WS_VISIBLE, (width / 2) - 70, yMax, 104, 24, window, nullptr, nullptr, nullptr);
 
-  // credits / author links (clickable - opens in browser)
+  // credits / author links (links clickable - open in browser)
   {
     int x = 30;
     int y = yMax + 50;
 
-    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn - modified by azmawee", WS_CHILD | WS_VISIBLE, x, y, 480, 20, window, nullptr, nullptr, nullptr);
+    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn v2.3", WS_CHILD | WS_VISIBLE, x, y, 300, 20, window, nullptr, nullptr, nullptr);
     y += 24;
 
-    githubLink = CreateWindowEx(0, WC_STATIC, L"GitHub:   github.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);
+    githubLink = CreateWindowEx(0, WC_STATIC, L"github.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);
     y += 22;
 
-    facebookLink = CreateWindowEx(0, WC_STATIC, L"Facebook: facebook.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);
+    facebookLink = CreateWindowEx(0, WC_STATIC, L"facebook.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);
+    y += 22;
+
+    CreateWindowEx(0, WC_STATIC, L"azmawee@freebsd.my", WS_CHILD | WS_VISIBLE, x, y, 300, 20, window, nullptr, nullptr, nullptr);
   }
 
   defWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(WndProc)));
