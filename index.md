@@ -36,6 +36,9 @@ stretching, no black bars. The harder half was the interface, and it is done too
 sidebar, the cursor, edge scrolling and the menus all sit where they should at 16:9. As far as I can
 tell nobody had pulled off real widescreen on this game in the 25 years since it came out.
 
+[Read how I got the widescreen working]({{ "/widescreen-story" | relative_url }}), including the last
+bug that nearly beat me.
+
 ![The main menu in 16:9 widescreen]({{ "/screenshots/menu.png" | relative_url }})
 
 ![Another menu view in widescreen]({{ "/screenshots/menu-2.png" | relative_url }})
