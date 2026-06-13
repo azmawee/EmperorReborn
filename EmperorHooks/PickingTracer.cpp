@@ -631,7 +631,13 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
           if (aspect > 1.34f)
           {
             float invS = (4.0f / 3.0f) / aspect;
-            if (g_scaleMode & 1)
+            // A Bink cutscene reuses the menu's 3D scene object and sets its dist to 1.0 for its own
+            // draw. Scaling that (and overwriting our per-object mark) corrupts the menu's dist, so after
+            // the movie the menu double-scales (1500 -> 1125 every frame) and clicks land off. Leave
+            // every dist and mark untouched while a movie is on screen; the menu then matches its own
+            // mark again the moment the movie ends.
+            bool moviePlaying = movieIsPlaying();
+            if ((g_scaleMode & 1) && !moviePlaying)
             {
               float* cd = (float*)(camera + CAMERA_DIST);
               if (needScale(g_camMarks, camera, *cd)) { *cd *= invS; markScaled(g_camMarks, camera, *cd); }
@@ -652,7 +658,7 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
             // the flag is clear. Battle and menu keep the original scene-dist scaling.
             bool frontEndNative = screenNeedsMoroUiFix(g_screenName)
                                   && (*(volatile DWORD*)MISSION_FLAG_ADDR == 0);
-            if ((g_scaleMode & 2) && !frontEndNative)
+            if ((g_scaleMode & 2) && !frontEndNative && !moviePlaying)
             {
               float* sd = (float*)(scene + SCENE_DIST);
               // DISTDIAG: chase the post-movie front-end click offset. Log on the front-end only
