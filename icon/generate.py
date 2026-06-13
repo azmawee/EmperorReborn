@@ -169,4 +169,27 @@ def card(w, h, name, title_px):
 
 card(1200, 630, "og-card.png", 132)
 card(1280, 384, "banner.png", 116)
+
+def launcher_header(w, h, name):
+    # opaque 24-bit BMP header for the Win32 launcher (no alpha; shown via SS_BITMAP)
+    c = Image.new("RGBA", (w, h)); px = c.load()
+    for y in range(h):
+        col = lerp((18, 22, 42), (26, 20, 32), y / (h - 1)) + (255,)
+        for x in range(w):
+            px[x, y] = col
+    c = Image.alpha_composite(c, glow(max(w, h), int(h * 0.55), int(h * 0.5), h * 0.7, EYE_GLOW, max_a=110).crop((0, 0, w, h)))
+    bsize = h - 16
+    c.alpha_composite(badge.resize((bsize, bsize), Image.LANCZOS), (10, 8))
+    d = ImageDraw.Draw(c)
+    tx = 10 + bsize + 18; tw = w - tx - 14
+    f_t = fit_font(FONTS + "impact.ttf", "EMPEROR REBORN", tw, int(h * 0.42))
+    f_g = fit_font(FONTS + "segoeui.ttf", "Emperor: Battle for Dune in true 16:9 widescreen", tw, int(h * 0.165))
+    ty = int(h * 0.20)
+    d.text((tx + 2, ty + 2), "EMPEROR REBORN", font=f_t, fill=(0, 0, 0, 150))
+    d.text((tx, ty), "EMPEROR REBORN", font=f_t, fill=SAND_TEXT + (255,))
+    ty2 = ty + f_t.getbbox("EMPEROR REBORN")[3] + int(h * 0.06)
+    d.text((tx, ty2), "Emperor: Battle for Dune in true 16:9 widescreen", font=f_g, fill=(206, 206, 212, 255))
+    c.convert("RGB").save(os.path.join(OUT, name)); print("wrote", name, (w, h))
+
+launcher_header(514, 118, "launcher-header.bmp")
 print("done")

@@ -470,7 +470,7 @@ int wmain(int argc, wchar_t* argv[])
 
   // main window
   int width = 550;
-  int height = 550;
+  int height = 700;
   int left = GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2;
   int top = GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2;
   window = CreateWindowEx(0, WC_DIALOG, L"Emperor Reborn", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, left, top, width, height, nullptr, nullptr, nullptr, nullptr);
@@ -483,12 +483,19 @@ int wmain(int argc, wchar_t* argv[])
     SendMessageW(window, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(appIcon));
   }
 
+  // Branding header banner across the top (icon/launcher-header.bmp, embedded via Resources.rc).
+  HWND headerPic = CreateWindowEx(0, WC_STATIC, nullptr, WS_CHILD | WS_VISIBLE | SS_BITMAP, 12, 12, 514, 118, window, nullptr, nullptr, nullptr);
+  HBITMAP headerBmp = reinterpret_cast<HBITMAP>(LoadImageW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDB_HEADER), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+  if (headerBmp)
+    SendMessageW(headerPic, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(headerBmp));
+
   int ySpace = 30;
+  int headerH = 140;   // vertical space reserved for the header banner above the columns
   int yMax = 0;
 
   // left side
   {
-    int y = ySpace;
+    int y = ySpace + headerH;
     int x = 30;
 
     CreateWindowEx(0, WC_STATIC, L"Settings", WS_CHILD | WS_VISIBLE, x, y, 200, 24, window, nullptr, nullptr, nullptr);
@@ -532,7 +539,7 @@ int wmain(int argc, wchar_t* argv[])
 
   // right side
   {
-    int y = ySpace;
+    int y = ySpace + headerH;
     int x = 330;
 
     CreateWindowEx(0, WC_STATIC, L"Debug settings", WS_CHILD | WS_VISIBLE, x, y, 200, 24, window, nullptr, nullptr, nullptr);
