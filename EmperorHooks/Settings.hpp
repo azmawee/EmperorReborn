@@ -32,9 +32,10 @@ public:
   // to fill the widescreen. Only matters when widescreen is on. Default keeps the 4:3 bars.
   bool pillarbox = true;
 
-  // Cutscene (Bink FMV) aspect. In widescreen the movies stretch to fill 16:9 by default. true =
-  // pillarbox them into a centred 4:3 box (black bars at the sides) so they keep their aspect.
-  bool cutscene43 = false;
+  // Cutscene (Bink FMV) aspect in widescreen. true = pillarbox the movies into a centred 4:3 box (black
+  // bars at the sides) so they keep their original aspect; false = stretch them to fill 16:9. Default is
+  // 4:3, since the movies are 4:3 and stretching distorts them; players who prefer the wide look turn it off.
+  bool cutscene43 = true;
 
 public:
   void readSettings()
