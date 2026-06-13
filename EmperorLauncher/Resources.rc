@@ -18,6 +18,13 @@ IDI_APPICON             ICON                    "..\\icon\\EmperorReborn.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Bitmap
+//
+// Branding header banner across the top of the launcher window (our own emblem + wordmark).
+IDB_HEADER              BITMAP                  "..\\icon\\launcher-header.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // PATCH109EN
 //
 // NOTE: The official Westwood/EA v1.09 patch (EM109EN.EXE) is intentionally

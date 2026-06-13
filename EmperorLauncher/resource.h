@@ -3,6 +3,7 @@
 // Used by Resources.rc
 //
 #define IDI_APPICON                     101
+#define IDB_HEADER                      102
 
 // Next default values for new objects
 //
