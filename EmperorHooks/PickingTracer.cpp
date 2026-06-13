@@ -654,11 +654,24 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
             if ((g_scaleMode & 2) && !frontEndNative)
             {
               float* sd = (float*)(scene + SCENE_DIST);
+              bool isMenu = strcmp(g_screenName, "MainMenu") == 0;
               if (needScale(g_sceneMarks, scene, *sd))
               {
+                float before = *sd;
                 *sd *= invS;
                 if (*sd != 0.0f) *(float*)(scene + SCENE_INVDIST) = 1.0f / *sd;
                 markScaled(g_sceneMarks, scene, *sd);
+                // DISTDIAG: watch the menu scene dist so we can see what a movie does to it (the
+                // post-movie click offset). A healthy menu rescales once on entry then stays steady.
+                if (isMenu)
+                  Log("DISTDIAG: MainMenu RESCALE scene=%08X %.3f -> %.3f invS=%.4f\n", scene, before, *sd, invS);
+              }
+              else if (isMenu)
+              {
+                static DWORD s_n = 0;
+                if ((s_n++ % 180) == 0)
+                  Log("DISTDIAG: MainMenu steady scene=%08X dist=%.3f inv=%.5f\n",
+                      scene, *sd, *(float*)(scene + SCENE_INVDIST));
               }
             }
           }

@@ -2,20 +2,28 @@
 #include "MovieFix.hpp"
 #include "Log.hpp"
 
-// Reverse-engineered addresses (Game.exe ImageBase 0x400000, no ASLR):
-//   0x5d03ac = IAT entry for binkw32!BinkDoFrame, called once per decoded movie frame.
-//   0x5d02e0 = function pointer the game CALLs (call dword [0x5d02e0]) to put the movie surface on
-//              screen at the chosen resolution. The call sites at 0x4d465d / 0x4d46e5 push the screen
-//              width/height (globals 0x602458 / 0x60245c) as the destination, which is what stretches
-//              the 4:3 movie across the widescreen. This is the seam we will rewrite to a 4:3 box.
-static void** const kBinkDoFrameIat = reinterpret_cast<void**>(0x005d03ac);
-static void** const kBlitFnPtr      = reinterpret_cast<void**>(0x005d02e0);
+// Reverse-engineered IAT entries for binkw32 (Game.exe ImageBase 0x400000, no ASLR):
+//   0x5d03a0 = BinkOpen(name, flags)            - a movie file is opened
+//   0x5d03ac = BinkDoFrame(hbink)               - decode the current frame (turned out NOT to fire for
+//                                                 these movies, so we also watch the two below)
+//   0x5d0394 = BinkCopyToBuffer(hbink, dst, pitch, h, x, y, flags) - put the frame on a surface
+// Diagnostic build: log what the movie path actually uses and the on-screen geometry, so the 4:3
+// rewrite can target the right seam. No drawing change.
+static void** const kBinkOpenIat     = reinterpret_cast<void**>(0x005d03a0);
+static void** const kBinkDoFrameIat  = reinterpret_cast<void**>(0x005d03ac);
+static void** const kBinkCopyIat     = reinterpret_cast<void**>(0x005d0394);
 
-// BinkDoFrame(HBINK) -> s32, RADLINK == __stdcall.
-typedef int(__stdcall* BinkDoFrame_t)(void* hbink);
+typedef void* (__stdcall* BinkOpen_t)(const char* name, unsigned flags);
+typedef int   (__stdcall* BinkDoFrame_t)(void* hbink);
+typedef int   (__stdcall* BinkCopy_t)(void* hbink, void* dest, int destpitch, unsigned destheight,
+                                      unsigned destx, unsigned desty, unsigned flags);
+
+static BinkOpen_t    s_realBinkOpen = nullptr;
 static BinkDoFrame_t s_realBinkDoFrame = nullptr;
-static volatile LONG  s_binkFrames = 0;
-static bool           s_cutscene43 = false;
+static BinkCopy_t    s_realBinkCopy = nullptr;
+static volatile LONG s_frames = 0;
+static volatile LONG s_copies = 0;
+static bool          s_cutscene43 = false;
 
 static void logAddrModule(const char* label, void* addr)
 {
@@ -29,12 +37,49 @@ static void logAddrModule(const char* label, void* addr)
       m ? static_cast<unsigned>(reinterpret_cast<char*>(addr) - reinterpret_cast<char*>(m)) : 0u);
 }
 
+static void* __stdcall MyBinkOpen(const char* name, unsigned flags)
+{
+  Log("MovieFix: BinkOpen name=\"%s\" flags=0x%X\n", name ? name : "(null)", flags);
+  s_frames = 0; s_copies = 0;
+  return s_realBinkOpen(name, flags);
+}
+
 static int __stdcall MyBinkDoFrame(void* hbink)
 {
-  LONG n = InterlockedIncrement(&s_binkFrames);
-  if (n <= 5)
+  LONG n = InterlockedIncrement(&s_frames);
+  if (n <= 3)
     Log("MovieFix: BinkDoFrame #%ld hbink=%p\n", n, hbink);
   return s_realBinkDoFrame(hbink);
+}
+
+static int __stdcall MyBinkCopy(void* hbink, void* dest, int destpitch, unsigned destheight,
+                                unsigned destx, unsigned desty, unsigned flags)
+{
+  LONG n = InterlockedIncrement(&s_copies);
+  if (n <= 3)
+    Log("MovieFix: BinkCopyToBuffer #%ld dest=%p pitch=%d destH=%u destX=%u destY=%u flags=0x%X\n",
+        n, dest, destpitch, destheight, destx, desty, flags);
+  return s_realBinkCopy(hbink, dest, destpitch, destheight, destx, desty, flags);
+}
+
+static bool hookIat(void** iat, void* hook, void** realOut, const char* label)
+{
+  if (IsBadReadPtr(iat, sizeof(void*)) || !*iat)
+  {
+    Log("MovieFix: %s IAT not readable / null\n", label);
+    return false;
+  }
+  *realOut = *iat;
+  logAddrModule(label, *iat);
+  DWORD oldProt = 0;
+  if (!VirtualProtect(iat, sizeof(void*), PAGE_READWRITE, &oldProt))
+  {
+    Log("MovieFix: VirtualProtect on %s failed (err %lu)\n", label, GetLastError());
+    return false;
+  }
+  *iat = hook;
+  VirtualProtect(iat, sizeof(void*), oldProt, &oldProt);
+  return true;
 }
 
 void initMovieFix(bool cutscene43)
@@ -43,28 +88,8 @@ void initMovieFix(bool cutscene43)
   Log("MovieFix: init (cutscene43=%d). Diagnostic build, play a cutscene and check these lines.\n",
       static_cast<int>(cutscene43));
 
-  // What does the game CALL to blit the movie to screen? (resolve module + offset)
-  if (!IsBadReadPtr(kBlitFnPtr, sizeof(void*)) && *kBlitFnPtr)
-    logAddrModule("[0x5d02e0] blit fn", *kBlitFnPtr);
-  else
-    Log("MovieFix: [0x5d02e0] not readable / null yet\n");
-
-  // Confirm the Bink decode path and install a tiny counter so we can tell a movie is playing.
-  if (!IsBadReadPtr(kBinkDoFrameIat, sizeof(void*)) && *kBinkDoFrameIat)
-  {
-    s_realBinkDoFrame = reinterpret_cast<BinkDoFrame_t>(*kBinkDoFrameIat);
-    logAddrModule("[0x5d03ac] BinkDoFrame", reinterpret_cast<void*>(s_realBinkDoFrame));
-
-    DWORD oldProt = 0;
-    if (VirtualProtect(kBinkDoFrameIat, sizeof(void*), PAGE_READWRITE, &oldProt))
-    {
-      *kBinkDoFrameIat = reinterpret_cast<void*>(&MyBinkDoFrame);
-      VirtualProtect(kBinkDoFrameIat, sizeof(void*), oldProt, &oldProt);
-      Log("MovieFix: BinkDoFrame IAT hooked, waiting for a cutscene\n");
-    }
-    else
-      Log("MovieFix: VirtualProtect on BinkDoFrame IAT failed (err %lu)\n", GetLastError());
-  }
-  else
-    Log("MovieFix: [0x5d03ac] BinkDoFrame IAT not readable / null\n");
+  hookIat(kBinkOpenIat,    reinterpret_cast<void*>(&MyBinkOpen),    reinterpret_cast<void**>(&s_realBinkOpen),    "[0x5d03a0] BinkOpen");
+  hookIat(kBinkDoFrameIat, reinterpret_cast<void*>(&MyBinkDoFrame), reinterpret_cast<void**>(&s_realBinkDoFrame), "[0x5d03ac] BinkDoFrame");
+  hookIat(kBinkCopyIat,    reinterpret_cast<void*>(&MyBinkCopy),    reinterpret_cast<void**>(&s_realBinkCopy),    "[0x5d0394] BinkCopyToBuffer");
+  Log("MovieFix: Bink IAT hooks installed, play a movie now\n");
 }
