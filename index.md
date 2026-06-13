@@ -13,7 +13,7 @@ image: /icon/og-card.png
   "applicationCategory": "GameApplication",
   "operatingSystem": "Windows 10, Windows 11",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "softwareVersion": "2.3",
+  "softwareVersion": "2.4",
   "downloadUrl": "https://github.com/azmawee/EmperorReborn/releases/latest",
   "url": "https://azmawee.github.io/EmperorReborn/",
   "author": { "@type": "Person", "name": "azmawee" },
@@ -40,17 +40,17 @@ fullscreen scaling and working multiplayer.
 ## Verify your download
 
 Every release is checksummed so you can confirm a download is the real build and not a tampered copy
-with something slipped in. These are the official SHA256 hashes for v2.3, served over HTTPS from this
+with something slipped in. These are the official SHA256 hashes for v2.4, served over HTTPS from this
 site. If a copy you got from anywhere does not match, do not run it.
 
 ```
-zip                9bd79fa9a4ba0a72dd21da0c85f6af8498e9c16cf3ef608eae970c8bc98077f8
-EmperorReborn.exe  48e78eb2bbcfc47646ed89ea26b5b6dc77d72a794f809c39adc9d41d6d7924cc
-EmperorHooks.dll   91acda9af9fc030ae4b88cddaf585c809e6ca3ff8e8710f8629ebe36be02a3d6
+zip                9513ed777412115d1c3e37218b44061609a7ca1d61279b3a659efc1c2b1d902a
+EmperorReborn.exe  0fd8d1c88b8b5ad4d45893c1931ed767b251f737771b90d9fa71618457963db9
+EmperorHooks.dll   84e066b50b524968e77b3e5bf582948985ed3fd64e487773e8a55068ab5c6c71
 ```
 
-Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256`, or with
-`certutil -hashfile EmperorReborn-v2.3.zip SHA256`, and compare it to the line above. The zip also
+Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.4.zip -Algorithm SHA256`, or with
+`certutil -hashfile EmperorReborn-v2.4.zip SHA256`, and compare it to the line above. The zip also
 carries a `SHA256SUMS.txt` listing the two executables, so you can verify those after extracting.
 
 ## Why this exists
@@ -87,6 +87,11 @@ bug that nearly beat me.
 
 **Fullscreen scaling.** Pick a resolution and it fills the monitor instead of pillarboxing. On a 4K
 screen the game looks like a real fullscreen game again instead of a postage stamp.
+
+**Cutscene movies kept at 4:3.** The FMV cutscenes were made for 4:3, so stretching them across a 16:9
+screen makes everyone look fat. By default they now play at their original 4:3 aspect with black bars at
+the sides, the way they were meant to look. There is a launcher tickbox if you would rather turn the
+bars off and stretch the movies to fill the screen.
 
 **Pick your resolution in the launcher.** 16:9 widescreen (1280x720, 1600x900, 1920x1080, 2560x1440)
 or the original 4:3 modes (640x480 up to 1152x864), or match the desktop. It defaults to 1280x720
