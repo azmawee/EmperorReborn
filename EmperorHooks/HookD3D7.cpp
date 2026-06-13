@@ -135,8 +135,14 @@ HRESULT STDMETHODCALLTYPE My_DDS_Blt(IDirectDrawSurface7* This, LPRECT lpDestRec
       RECT d = {}, s = {};
       if (lpDestRect) d = *lpDestRect;
       if (lpSrcRect)  s = *lpSrcRect;
-      Log("MovieFix/Blt: This=%p dst=(%ld,%ld,%ld,%ld) src=%p srcR=(%ld,%ld,%ld,%ld) flags=0x%lX\n",
-          This, d.left, d.top, d.right, d.bottom, lpDDSrc, s.left, s.top, s.right, s.bottom, dwFlags);
+      DDSURFACEDESC2 td = {}; td.dwSize = sizeof(td);
+      DDSURFACEDESC2 sd = {}; sd.dwSize = sizeof(sd);
+      This->lpVtbl->GetSurfaceDesc(This, &td);
+      if (lpDDSrc) lpDDSrc->lpVtbl->GetSurfaceDesc(lpDDSrc, &sd);
+      Log("MovieFix/Blt: This=%p (%lux%lu) destR=(%ld,%ld,%ld,%ld) src=%p (%lux%lu) srcR=(%ld,%ld,%ld,%ld) destNull=%d flags=0x%lX\n",
+          This, td.dwWidth, td.dwHeight, d.left, d.top, d.right, d.bottom,
+          lpDDSrc, sd.dwWidth, sd.dwHeight, s.left, s.top, s.right, s.bottom,
+          lpDestRect ? 0 : 1, dwFlags);
     }
   }
   return Real_DDS_Blt(This, lpDestRect, lpDDSrc, lpSrcRect, dwFlags, lpFx);
