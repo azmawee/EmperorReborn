@@ -4,6 +4,7 @@
 #include <cstring>
 #include "PickingTracer.hpp"
 #include "InGameHudFix.hpp"
+#include "MovieFix.hpp"
 #include "Log.hpp"
 
 // Widescreen via focal-distance scaling. The camera has no explicit FOV: width_half = (W/2)/dist,
@@ -654,24 +655,29 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
             if ((g_scaleMode & 2) && !frontEndNative)
             {
               float* sd = (float*)(scene + SCENE_DIST);
-              bool isMenu = strcmp(g_screenName, "MainMenu") == 0;
+              // DISTDIAG: chase the post-movie front-end click offset. Log on the front-end only
+              // (mission flag clear) so the battlefield does not spam. RESCALE = the game changed the
+              // dist and we re-applied the scale (rare; should spike right after a movie if that is the
+              // cause). steady = throttled heartbeat of the current dist. movie= whether a Bink frame
+              // decoded just now, to correlate. scr = the real screen name (we do not yet know the menu's).
+              bool frontEnd = (*(volatile DWORD*)MISSION_FLAG_ADDR == 0);
               if (needScale(g_sceneMarks, scene, *sd))
               {
                 float before = *sd;
                 *sd *= invS;
                 if (*sd != 0.0f) *(float*)(scene + SCENE_INVDIST) = 1.0f / *sd;
                 markScaled(g_sceneMarks, scene, *sd);
-                // DISTDIAG: watch the menu scene dist so we can see what a movie does to it (the
-                // post-movie click offset). A healthy menu rescales once on entry then stays steady.
-                if (isMenu)
-                  Log("DISTDIAG: MainMenu RESCALE scene=%08X %.3f -> %.3f invS=%.4f\n", scene, before, *sd, invS);
+                if (frontEnd)
+                  Log("DISTDIAG: RESCALE scr=%-10s scene=%08X %.3f -> %.3f invS=%.4f movie=%d\n",
+                      g_screenName[0] ? g_screenName : "?", scene, before, *sd, invS, (int)movieIsPlaying());
               }
-              else if (isMenu)
+              else if (frontEnd)
               {
                 static DWORD s_n = 0;
-                if ((s_n++ % 180) == 0)
-                  Log("DISTDIAG: MainMenu steady scene=%08X dist=%.3f inv=%.5f\n",
-                      scene, *sd, *(float*)(scene + SCENE_INVDIST));
+                if ((s_n++ % 240) == 0)
+                  Log("DISTDIAG: steady  scr=%-10s scene=%08X dist=%.3f inv=%.5f movie=%d\n",
+                      g_screenName[0] ? g_screenName : "?", scene, *sd, *(float*)(scene + SCENE_INVDIST),
+                      (int)movieIsPlaying());
               }
             }
           }
