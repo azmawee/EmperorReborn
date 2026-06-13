@@ -21,7 +21,7 @@ image: /icon/og-card.png
 }
 </script>
 
-<p align="center"><img src="{{ '/icon/logo.png' | relative_url }}" alt="Emperor Reborn emblem" width="130"></p>
+<p align="center"><img src="{{ '/icon/banner.png' | relative_url }}" alt="Emperor Reborn - Emperor: Battle for Dune in true 16:9 widescreen" style="width:100%;max-width:960px;height:auto"></p>
 
 # Emperor Reborn
 
