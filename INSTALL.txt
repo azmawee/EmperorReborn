@@ -38,7 +38,7 @@ copy, check it against the official SHA256 published on the
 site: https://azmawee.github.io/EmperorReborn/
 
   1. Verify the zip. In PowerShell:
-        Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256
+        Get-FileHash .\EmperorReborn-v2.4.zip -Algorithm SHA256
      Compare the result to the hash on the site. If it does
      not match, do not run it.
 

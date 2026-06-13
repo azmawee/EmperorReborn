@@ -31,6 +31,9 @@ edit the registry by hand.
   works.
 - **Fullscreen scaling.** Your chosen resolution fills the whole monitor instead of pillarboxing.
   On a 4K screen the original resolutions are unusably tiny otherwise.
+- **Cutscene movies kept at 4:3.** The FMV cutscenes are 4:3, so widescreen stretched them fat. They now
+  play at their original aspect with black bars by default; a launcher tickbox turns the bars off and
+  stretches them wide if you prefer.
 - **Resolution dropdown.** 16:9 widescreen (1280x720, 1600x900, 1920x1080, 2560x1440) or the
   original 4:3 modes (640x480 up to 1152x864), or match-desktop. Defaults to 1280x720. Saved between
   runs.
@@ -87,7 +90,7 @@ something slipped in. The official SHA256 hashes are published on the
 with
 
 ```powershell
-Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256
+Get-FileHash .\EmperorReborn-v2.4.zip -Algorithm SHA256
 ```
 
 and compare it to the published hash. The zip also carries a `SHA256SUMS.txt` listing the hashes of the

@@ -524,7 +524,7 @@ int wmain(int argc, wchar_t* argv[])
     SendMessageW(resolutionCombo, CB_SETDROPPEDWIDTH, 230, 0);
     y += ySpace;
 
-    cutscene43Checkbox = CreateWindowEx(0, WC_BUTTON, L"Cutscenes in 4:3 (black bars)", WS_CHILD | BS_AUTOCHECKBOX | WS_VISIBLE, x, y, 240, 24, window, nullptr, nullptr, nullptr);
+    cutscene43Checkbox = CreateWindowEx(0, WC_BUTTON, L"Cutscene movies / FMV in 4:3 (black bars)", WS_CHILD | BS_AUTOCHECKBOX | WS_VISIBLE, x, y, 290, 24, window, nullptr, nullptr, nullptr);
     y += ySpace;
 
     y += ySpace;
@@ -579,7 +579,7 @@ int wmain(int argc, wchar_t* argv[])
     int x = 30;
     int y = yMax + 50;
 
-    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn v2.3", WS_CHILD | WS_VISIBLE, x, y, 300, 20, window, nullptr, nullptr, nullptr);
+    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn v2.4", WS_CHILD | WS_VISIBLE, x, y, 300, 20, window, nullptr, nullptr, nullptr);
     y += 24;
 
     githubLink = CreateWindowEx(0, WC_STATIC, L"github.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);

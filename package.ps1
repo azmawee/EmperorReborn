@@ -21,7 +21,7 @@
   powershell -ExecutionPolicy Bypass -File .\package.ps1 -Version 1.0
 #>
 param(
-  [string]$Version = "2.3",
+  [string]$Version = "2.4",
   [switch]$SkipBuild,
   # Optional toolset override. Local builds leave it empty and use the project's toolset; CI passes a
   # toolset that exists on the runner (e.g. v143 on windows-latest) since the dev machine uses a newer one.
