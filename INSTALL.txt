@@ -31,6 +31,30 @@ That's it. You do NOT need to install any extra runtime or
 
 
 ------------------------------------------------------------
+BEFORE YOU START - VERIFY YOUR DOWNLOAD (recommended)
+------------------------------------------------------------
+So you know the download is the real build and not a tampered
+copy, check it against the official SHA256 published on the
+site: https://azmawee.github.io/EmperorReborn/
+
+  1. Verify the zip. In PowerShell:
+        Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256
+     Compare the result to the hash on the site. If it does
+     not match, do not run it.
+
+  2. Extract the zip.
+
+  3. Verify the two programs. The zip ships a SHA256SUMS.txt;
+     check both files against it:
+        Get-FileHash .\EmperorReborn.exe  -Algorithm SHA256
+        Get-FileHash .\EmperorHooks.dll   -Algorithm SHA256
+     Both must match the lines in SHA256SUMS.txt.
+
+(EM109EN.EXE is the EA patch you supply yourself. Get it from a
+source you trust, see the note above.)
+
+
+------------------------------------------------------------
 STEP 1 - PUT THE FILES SOMEWHERE
 ------------------------------------------------------------
 Unzip this folder anywhere you like, for example:

@@ -152,9 +152,9 @@ that works is GPU scaling off, scaling mode set to preserve aspect ratio.
 
 ## Tested on
 
-Tested on Windows 11, which is what I run it on daily. Windows 10 is expected to work but is not
-verified yet, community verification is needed. If you run it on Windows 10 or anywhere else and it
-works (or it doesn't), open an issue and tell me.
+Tested on Windows 11, which is what I run it on daily. Windows 10 is expected to work, but still needs
+community confirmation. If you run it on Windows 10 or anywhere else and it works (or it doesn't), open
+an issue and tell me.
 
 ## FAQ
 
