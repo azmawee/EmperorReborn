@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by Resources.rc
 //
+#define IDI_APPICON                     101
 
 // Next default values for new objects
 //

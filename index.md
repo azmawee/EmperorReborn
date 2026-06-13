@@ -1,7 +1,7 @@
 ---
 title: "Emperor: Battle for Dune on Windows 10 and 11 - real widescreen, fullscreen, multiplayer"
 description: "Download Emperor: Battle for Dune for Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling, the original resolutions and direct-IP multiplayer. Free and open source."
-image: /screenshots/gameplay-2.png
+image: /icon/og-card.png
 ---
 
 <script type="application/ld+json">
@@ -20,6 +20,8 @@ image: /screenshots/gameplay-2.png
   "description": "Play Emperor: Battle for Dune on Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling, the original resolutions and direct-IP multiplayer."
 }
 </script>
+
+<p align="center"><img src="{{ '/icon/logo.png' | relative_url }}" alt="Emperor Reborn emblem" width="130"></p>
 
 # Emperor Reborn
 

@@ -15,6 +15,7 @@
 #include <filesystem>
 #include "md5.h"
 #include "NetworkTest.hpp"
+#include "resource.h"
 
 
 HANDLE globalCommsFileMappingHandle = nullptr;
@@ -473,6 +474,14 @@ int wmain(int argc, wchar_t* argv[])
   int left = GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2;
   int top = GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2;
   window = CreateWindowEx(0, WC_DIALOG, L"Emperor Reborn", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, left, top, width, height, nullptr, nullptr, nullptr, nullptr);
+
+  // Our own emblem (icon/EmperorReborn.ico, embedded via Resources.rc) on the title bar and taskbar.
+  HICON appIcon = LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDI_APPICON));
+  if (appIcon)
+  {
+    SendMessageW(window, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(appIcon));
+    SendMessageW(window, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(appIcon));
+  }
 
   int ySpace = 30;
   int yMax = 0;
