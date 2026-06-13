@@ -661,29 +661,11 @@ static LONG CALLBACK widescreenVeh(EXCEPTION_POINTERS* ep)
             if ((g_scaleMode & 2) && !frontEndNative && !moviePlaying)
             {
               float* sd = (float*)(scene + SCENE_DIST);
-              // DISTDIAG: chase the post-movie front-end click offset. Log on the front-end only
-              // (mission flag clear) so the battlefield does not spam. RESCALE = the game changed the
-              // dist and we re-applied the scale (rare; should spike right after a movie if that is the
-              // cause). steady = throttled heartbeat of the current dist. movie= whether a Bink frame
-              // decoded just now, to correlate. scr = the real screen name (we do not yet know the menu's).
-              bool frontEnd = (*(volatile DWORD*)MISSION_FLAG_ADDR == 0);
               if (needScale(g_sceneMarks, scene, *sd))
               {
-                float before = *sd;
                 *sd *= invS;
                 if (*sd != 0.0f) *(float*)(scene + SCENE_INVDIST) = 1.0f / *sd;
                 markScaled(g_sceneMarks, scene, *sd);
-                if (frontEnd)
-                  Log("DISTDIAG: RESCALE scr=%-10s scene=%08X %.3f -> %.3f invS=%.4f movie=%d\n",
-                      g_screenName[0] ? g_screenName : "?", scene, before, *sd, invS, (int)movieIsPlaying());
-              }
-              else if (frontEnd)
-              {
-                static DWORD s_n = 0;
-                if ((s_n++ % 240) == 0)
-                  Log("DISTDIAG: steady  scr=%-10s scene=%08X dist=%.3f inv=%.5f movie=%d\n",
-                      g_screenName[0] ? g_screenName : "?", scene, *sd, *(float*)(scene + SCENE_INVDIST),
-                      (int)movieIsPlaying());
               }
             }
           }
