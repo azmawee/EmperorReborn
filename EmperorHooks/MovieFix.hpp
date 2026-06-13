@@ -9,3 +9,7 @@
 // The actual 4:3 rewrite is wired in once the blit is confirmed from a real run. Calling this never
 // changes what is drawn, so it is safe to ship disabled.
 void initMovieFix(bool cutscene43);
+
+// True for a short window after the last decoded Bink frame, i.e. a cutscene is on screen right now.
+// Used to gate the 4:3 pillarbox so it only ever touches the movie, never the menus or the battlefield.
+bool movieIsPlaying();
