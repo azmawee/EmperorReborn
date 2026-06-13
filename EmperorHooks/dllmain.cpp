@@ -9,6 +9,7 @@
 #include "PatchWindowManagement.hpp"
 #include "PickingTracer.hpp"
 #include "InGameHudFix.hpp"
+#include "MovieFix.hpp"
 #include "WrapWinsock.hpp"
 #include "Log.hpp"
 #include "PatchWol.hpp"
@@ -91,6 +92,10 @@ void runHooks()
   patchRedirectRegistry();
   patchD3D7ResolutionLimit();
   patchWindowManagement(settings.fullscreen, !settings.disableCursorCapture, settings.screenWidth, settings.screenHeight);
+
+  // Cutscene (Bink) 4:3 pillarbox. Diagnostic-only for now: identifies the movie blit and confirms the
+  // Bink path in emperor.txt while a cutscene plays. Safe to call regardless of the setting.
+  initMovieFix(settings.cutscene43);
 
   // In-game 2D HUD/sidebar widescreen fix, applied to the loaded image. Capture the vanilla bytes now;
   // it is toggled on ONLY while in a mission (see PickingTracer) so the front-end menu stays

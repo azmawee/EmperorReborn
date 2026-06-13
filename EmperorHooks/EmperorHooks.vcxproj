@@ -140,6 +140,7 @@ nmake</Command>
     <ClCompile Include="PatchWindowManagement.cpp" />
     <ClCompile Include="PickingTracer.cpp" />
     <ClCompile Include="InGameHudFix.cpp" />
+    <ClCompile Include="MovieFix.cpp" />
     <ClCompile Include="ResolveHost.cpp" />
     <ClCompile Include="WolIrcServer.cpp" />
     <ClCompile Include="WolProxyBase.cpp" />

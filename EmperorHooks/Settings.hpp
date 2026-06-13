@@ -32,6 +32,10 @@ public:
   // to fill the widescreen. Only matters when widescreen is on. Default keeps the 4:3 bars.
   bool pillarbox = true;
 
+  // Cutscene (Bink FMV) aspect. In widescreen the movies stretch to fill 16:9 by default. true =
+  // pillarbox them into a centred 4:3 box (black bars at the sides) so they keep their aspect.
+  bool cutscene43 = false;
+
 public:
   void readSettings()
   {
@@ -86,6 +90,10 @@ public:
     if (pillarboxTemp)
       pillarbox = *pillarboxTemp == "1";
 
+    std::optional<std::string> cutscene43Temp = regReadString(key, "Cutscene43");
+    if (cutscene43Temp)
+      cutscene43 = *cutscene43Temp == "1";
+
     RegCloseKey(key);
   }
 
@@ -105,6 +113,7 @@ public:
     regWriteString(key, "ScreenHeight", std::to_string(screenHeight));
     regWriteString(key, "Widescreen", widescreen ? "1" : "0");
     regWriteString(key, "Pillarbox", pillarbox ? "1" : "0");
+    regWriteString(key, "Cutscene43", cutscene43 ? "1" : "0");
 
     RegCloseKey(key);
   }
