@@ -40,28 +40,17 @@ fullscreen scaling and working multiplayer.
 ## Verify your download
 
 Every release is checksummed so you can confirm a download is the real build and not a tampered copy
-with something slipped in. These are the official SHA256 hashes, served over HTTPS from this site, and
-kept here for every release so older downloads stay verifiable too. If a copy you got from anywhere
-does not match, do not run it.
+with something slipped in. These are the official SHA256 hashes for the latest release, served over
+HTTPS from this site. If a copy you got from anywhere does not match, do not run it.
 
 Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.4.zip -Algorithm SHA256` (or
-`certutil -hashfile EmperorReborn-v2.4.zip SHA256`) and compare it to the matching release below. Each
-zip also carries a `SHA256SUMS.txt` listing the two executables, so you can verify those after extracting.
-
-**v2.4 (latest)**
+`certutil -hashfile EmperorReborn-v2.4.zip SHA256`) and compare it to the hashes below. Each zip also
+carries a `SHA256SUMS.txt` listing the two executables, so you can verify those after extracting.
 
 ```
 zip                b9e451dbea47c7369c728ae0a9a9fee7364b62f0c9903eb5c3d44e2cc08c1659
 EmperorReborn.exe  8dc3aa7f6027e5852983ca1a340ada4a89dac6ee8e603a0f73194f8fcecc9872
 EmperorHooks.dll   84e066b50b524968e77b3e5bf582948985ed3fd64e487773e8a55068ab5c6c71
-```
-
-**v2.3**
-
-```
-zip                9bd79fa9a4ba0a72dd21da0c85f6af8498e9c16cf3ef608eae970c8bc98077f8
-EmperorReborn.exe  48e78eb2bbcfc47646ed89ea26b5b6dc77d72a794f809c39adc9d41d6d7924cc
-EmperorHooks.dll   91acda9af9fc030ae4b88cddaf585c809e6ca3ff8e8710f8629ebe36be02a3d6
 ```
 
 ## Why this exists
