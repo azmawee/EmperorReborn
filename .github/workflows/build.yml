@@ -1,10 +1,9 @@
-name: checks
+name: build
 
-# Repo checks that run without the withheld in-game-patch source. The full Release/x86 build and the
-# packaged zip cannot be produced here because EmperorHooks needs EmperorHooks/InGameHudFix.cpp, which is
-# deliberately not in the repo (reverse-engineered patch data, like EM109EN.EXE). So CI verifies what it
-# can: that the version string is consistent across the launcher, the site, the readme and package.ps1.
-# A full build/package/SHA256 stays a local step on a machine that has the patch source.
+# Full Release/x86 build, package and checksum. This is reproducible from the repo now that the
+# in-game HUD patch source (EmperorHooks/InGameHudFix.cpp, Moro's widescreen patch) is committed.
+# The dev machine uses a newer toolset (v145); the runner has VS2022, so we pass -PlatformToolset v143.
+# Pinned to windows-2022 because that image ships the v143 toolset.
 
 on:
   push:
@@ -13,8 +12,8 @@ on:
     branches: [ main ]
 
 jobs:
-  checks:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
 
@@ -35,3 +34,19 @@ jobs:
             echo "::error::version mismatch (launcher=$launcher jsonld=$jsonld readme=$readme package=$package)"
             exit 1
           fi
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build and package (Release/x86)
+        shell: pwsh
+        run: .\package.ps1 -Version ci -PlatformToolset v143
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: EmperorReborn-ci
+          path: |
+            dist/EmperorReborn-vci.zip
+            dist/EmperorReborn-vci.zip.sha256
+          if-no-files-found: error
