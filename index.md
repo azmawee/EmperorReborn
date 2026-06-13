@@ -26,10 +26,7 @@ image: /screenshots/gameplay-2.png
 Emperor Reborn is a free, open-source launcher that runs *Emperor: Battle for Dune* (Westwood, 2001) on
 Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling and working multiplayer.
 
-<video controls muted loop playsinline poster="{{ '/screenshots/gameplay-2.png' | relative_url }}" style="width:100%;max-width:960px;height:auto;border-radius:6px;display:block;margin:0 auto">
-  <source src="{{ '/screenshots/widescreen-demo.mp4' | relative_url }}" type="video/mp4">
-  <img src="{{ '/screenshots/gameplay-2.png' | relative_url }}" alt="Emperor: Battle for Dune in 16:9 widescreen, old 4:3 next to real widescreen" style="width:100%;max-width:960px;height:auto" />
-</video>
+![Emperor: Battle for Dune in 16:9 widescreen]({{ "/screenshots/gameplay-2.png" | relative_url }})
 
 [**Download the latest release**](https://github.com/azmawee/EmperorReborn/releases/latest)
 &nbsp;|&nbsp;
