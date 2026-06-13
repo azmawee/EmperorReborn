@@ -24,7 +24,8 @@ image: /screenshots/gameplay-2.png
 # Emperor Reborn
 
 Emperor Reborn is a free, open-source launcher that runs *Emperor: Battle for Dune* (Westwood, 2001) on
-Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling and working multiplayer.
+modern Windows, tested on Windows 11 and expected to work on Windows 10, with real 16:9 widescreen,
+fullscreen scaling and working multiplayer.
 
 ![Emperor: Battle for Dune in 16:9 widescreen]({{ "/screenshots/gameplay-2.png" | relative_url }})
 
@@ -67,8 +68,11 @@ the registry.
 running it wide just stretches the picture fat or crops the top and bottom off. This one actually
 widens the view, pick a 16:9 resolution and the battlefield renders at the real aspect, no
 stretching, no black bars. The harder half was the interface, and it is done too, the in-game
-sidebar, the cursor, edge scrolling and the menus all sit where they should at 16:9. As far as I can
-tell nobody had pulled off real widescreen on this game in the 25 years since it came out.
+sidebar, the cursor, edge scrolling and the menus all sit where they should at 16:9. The in-game
+sidebar/HUD half builds on Moro's widescreen patch, shared freely in the Emperor community on Discord
+and used with thanks; the camera widening and the front-end menus, star map and briefings are mine. As
+far as I can tell nobody had pulled off real widescreen on this game, the whole interface included, in
+the 25 years since it came out.
 
 [Read how I got the widescreen working]({{ "/widescreen-story" | relative_url }}), including the last
 bug that nearly beat me.
@@ -146,9 +150,9 @@ that works is GPU scaling off, scaling mode set to preserve aspect ratio.
 
 ## Tested on
 
-Tested on Windows 11, which is what I run it on daily. Windows 10 is expected to work but I have not
-verified it myself yet. If you run it on Windows 10 or anywhere else and it works (or it doesn't), open
-an issue and tell me.
+Tested on Windows 11, which is what I run it on daily. Windows 10 is expected to work but is not
+verified yet, community verification is needed. If you run it on Windows 10 or anywhere else and it
+works (or it doesn't), open an issue and tell me.
 
 ## FAQ
 
@@ -204,4 +208,5 @@ Westwood Studios, and the related trademarks belong to their owners.
 
 Built on top of [wheybags' patch](https://wheybags.com/blog/emperor.html). His
 [blog post](https://wheybags.com/blog/emperor.html) explains the hard technical parts and is worth
-a read.
+a read. The in-game HUD widescreen patch is Moro's work, shared freely in the Emperor community on
+Discord and used with thanks.
