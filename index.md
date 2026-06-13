@@ -51,8 +51,8 @@ zip also carries a `SHA256SUMS.txt` listing the two executables, so you can veri
 **v2.4 (latest)**
 
 ```
-zip                9513ed777412115d1c3e37218b44061609a7ca1d61279b3a659efc1c2b1d902a
-EmperorReborn.exe  0fd8d1c88b8b5ad4d45893c1931ed767b251f737771b90d9fa71618457963db9
+zip                b9e451dbea47c7369c728ae0a9a9fee7364b62f0c9903eb5c3d44e2cc08c1659
+EmperorReborn.exe  8dc3aa7f6027e5852983ca1a340ada4a89dac6ee8e603a0f73194f8fcecc9872
 EmperorHooks.dll   84e066b50b524968e77b3e5bf582948985ed3fd64e487773e8a55068ab5c6c71
 ```
 

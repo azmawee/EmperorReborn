@@ -548,7 +548,7 @@ int wmain(int argc, wchar_t* argv[])
     y += ySpace;
 
 
-    yMax = std::max(yMax, y + ySpace);
+    yMax = std::max(yMax, y + 8);
   }
 
   // right side
@@ -569,10 +569,10 @@ int wmain(int argc, wchar_t* argv[])
     y += ySpace;
 
 
-    yMax = std::max(yMax, y + ySpace);
+    yMax = std::max(yMax, y + 8);
   }
 
-  playButton = CreateWindowEx(0, WC_BUTTON, L"Play", WS_CHILD | WS_VISIBLE, (width / 2) - 70, yMax, 104, 24, window, nullptr, nullptr, nullptr);
+  playButton = CreateWindowEx(0, WC_BUTTON, L"Play", WS_CHILD | WS_VISIBLE, (width - 140) / 2, yMax, 140, 34, window, nullptr, nullptr, nullptr);
 
   // credits / author links (links clickable - open in browser)
   {
