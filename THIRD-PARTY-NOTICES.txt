@@ -46,6 +46,14 @@ copyright notices and license terms are reproduced as required.
    of any kind.
 
 --------------------------------------------------------------------------------
+3) In-game HUD / sidebar widescreen patch by Moro
+   The in-mission 2D interface widescreen layout (the machine-code edits in
+   EmperorHooks/InGameHudFix.cpp) was worked out by Moro, who shared it freely in
+   the Emperor: Battle for Dune community on Discord (https://discord.gg/PHceUK3x).
+   It is used here with permission, with thanks. Moro shared a pre-patched Game.exe;
+   this project extracts that patch and applies it at runtime instead.
+
+--------------------------------------------------------------------------------
 NOT REDISTRIBUTED HERE
    - The DirectX 7 SDK headers under EmperorHooks/dx7sdk_include are Microsoft
      SDK headers, used only at build time.

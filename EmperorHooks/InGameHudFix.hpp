@@ -8,9 +8,9 @@
 // while a mission is loaded, removed (vanilla bytes restored) while in the menu, so the menu renders
 // exactly as it does without it.
 //
-// The edit bytes themselves live in InGameHudFix.cpp, which is not committed to this repo (it carries
-// reverse-engineered game-patch data, for the same reason EM109EN.EXE is not included). A prebuilt
-// release has it compiled in.
+// The in-mission HUD widescreen patch itself is Moro's work, shared freely in the Emperor community on
+// Discord and used here with permission and thanks. The edit bytes and the full credit are in
+// InGameHudFix.cpp.
 
 // Capture the vanilla bytes for every patched region and make the pages writable. Call once at startup,
 // before the patch is ever toggled on.

@@ -1,7 +1,8 @@
 # Emperor Reborn
 
 Emperor Reborn is a free, open-source launcher to play *Emperor: Battle for Dune* (Westwood, 2001) on
-Windows 10 and 11 with real 16:9 widescreen, fullscreen scaling and working multiplayer.
+modern Windows, tested on Windows 11 and expected to work on Windows 10, with real 16:9 widescreen,
+fullscreen scaling and working multiplayer.
 
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?logo=windows)
 ![License](https://img.shields.io/badge/license-MIT--0-green)
@@ -23,8 +24,11 @@ edit the registry by hand.
 - **True widescreen (16:9).** The headline feature. Every other way of running Emperor wide either
   stretches it fat or crops the top and bottom off. This widens the actual view instead: the
   battlefield renders at the real aspect with no stretching, and the harder half (sidebar, cursor,
-  edge scroll and menus) lines up correctly too. As far as I can tell it is the first real widescreen
-  for this game in the 25 years since release.
+  edge scroll and menus) lines up correctly too. The in-mission sidebar/HUD layout builds on Moro's
+  widescreen patch, shared freely in the Emperor community on Discord and used with thanks; the 3D
+  camera scaling and the front-end menu and star-map fixes are this project's. As far as I can tell it
+  is the first real widescreen for this game in the 25 years since release where the whole interface
+  works.
 - **Fullscreen scaling.** Your chosen resolution fills the whole monitor instead of pillarboxing.
   On a 4K screen the original resolutions are unusably tiny otherwise.
 - **Resolution dropdown.** 16:9 widescreen (1280x720, 1600x900, 1920x1080, 2560x1440) or the
@@ -153,6 +157,8 @@ of the original patch.
   (wheybags), MIT-0.
 - This fork keeps MIT-0 (see [`license.txt`](license.txt)). Third-party components are listed in
   [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt).
+- In-game HUD / sidebar widescreen patch by **Moro**, shared freely in the Emperor community on
+  Discord and used with thanks (see [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt)).
 - Maintained by azmawee ([GitHub](https://github.com/azmawee)).
 
 MIT-0 covers only the source in this repo. It grants no rights to *Emperor: Battle for Dune*, its

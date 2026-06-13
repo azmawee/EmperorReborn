@@ -69,8 +69,8 @@ I do this from outside the game, every frame, without ever modifying the game on
 hardware breakpoint on the instruction right after the render code loads its camera, catch it with an
 exception handler, and adjust the two distance values in memory before the frame draws. The
 battlefield, the cursor, the edge scrolling and the menus all went to true 16:9 and stayed clickable.
-The in-game sidebar needed its own 2D fix, which a community patcher had already worked out, so I
-folded that in.
+The in-game sidebar needed its own 2D fix, which a community patcher called Moro had already worked
+out and shared freely on the Emperor Discord, so I folded that in with thanks.
 
 At that point almost everything was done. Almost.
 
@@ -85,7 +85,7 @@ That number, three quarters, is 960 divided by 1280, the ratio between a 4:3 wid
 So somewhere those screens were still thinking in 4:3 while everything else had moved on. The trouble
 was finding where.
 
-I went down a long list of wrong answers. I checked whether the patch for the in-game sidebar would
+I went down a long list of wrong answers. I checked whether Moro's patch for the in-game sidebar would
 fix these screens too. It did not, they use a different system. I dumped the game's whole pile of
 global variables on a working screen and again after the bug appeared and compared every single one,
 looking for the value that had quietly flipped to a 4:3 number. Nothing had changed. I found the
@@ -111,10 +111,12 @@ screens." After days of chasing it, that was the whole thing.
 ## Why it matters
 
 People have run Emperor stretched fat for years, and a couple of folks managed to widen the picture
-while leaving the menus broken or off 4:3. As far as I can find, nobody had real 16:9 where the world
-is genuinely wider and the entire interface still works, clicks and all. The interface is the part
-everyone, wheybags included, sidestepped, because it is the hard half and the game gives you no help
-finding it. That half is done now. You can play the whole campaign, menus, star map, briefings and
+while leaving the menus broken or off 4:3. Moro had cracked the in-mission sidebar and HUD, the
+in-battle half, and shared it freely on the Emperor Discord, which I built on. What was still missing
+was the front-end, the menus, the star map and the briefings, in true widescreen with every click
+intact. As far as I can find, nobody had that, the world genuinely wider and the whole interface still
+working, clicks and all. The front-end is the part everyone, wheybags included, sidestepped, because
+it is the hard half and the game gives you no help finding it. That half is done now. You can play the whole campaign, menus, star map, briefings and
 battles, at a real widescreen aspect, and everything lands where you click it.
 
 It is the same 2001 game with all its content untouched. If you would rather have the original look,
