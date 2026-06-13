@@ -44,9 +44,9 @@ with something slipped in. These are the official SHA256 hashes for v2.3, served
 site. If a copy you got from anywhere does not match, do not run it.
 
 ```
-zip                e7499a26420154359fe642ea518ff3fd685bfdcfec1feb523660ac5152114444
-EmperorReborn.exe  a9aabb251c664b952c4fddebe36d8a29c2497673bf5a8214ad4a47a13a108f46
-EmperorHooks.dll   dd100fd99882363060b57c89a0ad2222c4df15ea4f1a4368e9231f10faa54a5d
+zip                9bd79fa9a4ba0a72dd21da0c85f6af8498e9c16cf3ef608eae970c8bc98077f8
+EmperorReborn.exe  48e78eb2bbcfc47646ed89ea26b5b6dc77d72a794f809c39adc9d41d6d7924cc
+EmperorHooks.dll   91acda9af9fc030ae4b88cddaf585c809e6ca3ff8e8710f8629ebe36be02a3d6
 ```
 
 Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.3.zip -Algorithm SHA256`, or with
