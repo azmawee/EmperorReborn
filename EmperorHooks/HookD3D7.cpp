@@ -10,6 +10,7 @@
 #include "Error.hpp"
 #include "Log.hpp"
 #include "PickingTracer.hpp"
+#include "MovieFix.hpp"
 
 
 LARGE_INTEGER lastFrameTime = {};
@@ -116,6 +117,32 @@ HRESULT STDMETHODCALLTYPE My_IDirect3DDevice7_SetTransform(IDirect3DDevice7* Thi
 }
 
 
+// Cutscene 4:3: the Bink movie ends up on screen via a DirectDraw Blt that stretches its surface across
+// the whole framebuffer. All IDirectDrawSurface7 instances share one vtable, so hooking Blt on any
+// surface catches that blit. DIAGNOSTIC for now: while a movie is on screen (movieIsPlaying), log the
+// destination rect so we can confirm this is the seam and read the geometry, then rewrite it to a
+// centred 4:3 box. Outside a movie the hook is a single GetTickCount compare, so it is effectively free.
+void* OriginalPointer_DDS_Blt = nullptr;
+HRESULT(STDMETHODCALLTYPE* Real_DDS_Blt)(IDirectDrawSurface7* This, LPRECT lpDestRect, IDirectDrawSurface7* lpDDSrc, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpFx) = nullptr;
+HRESULT STDMETHODCALLTYPE My_DDS_Blt(IDirectDrawSurface7* This, LPRECT lpDestRect, IDirectDrawSurface7* lpDDSrc, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpFx)
+{
+  if (gWidescreen && movieIsPlaying())
+  {
+    static int n = 0;
+    if (n < 16)
+    {
+      n++;
+      RECT d = {}, s = {};
+      if (lpDestRect) d = *lpDestRect;
+      if (lpSrcRect)  s = *lpSrcRect;
+      Log("MovieFix/Blt: This=%p dst=(%ld,%ld,%ld,%ld) src=%p srcR=(%ld,%ld,%ld,%ld) flags=0x%lX\n",
+          This, d.left, d.top, d.right, d.bottom, lpDDSrc, s.left, s.top, s.right, s.bottom, dwFlags);
+    }
+  }
+  return Real_DDS_Blt(This, lpDestRect, lpDDSrc, lpSrcRect, dwFlags, lpFx);
+}
+
+
 void* OriginalPointer_IDirect3D7_CreateDevice = nullptr;
 HRESULT(STDMETHODCALLTYPE* Real_IDirect3D7_CreateDevice)(IDirect3D7* This, REFCLSID rclsid, LPDIRECTDRAWSURFACE7 lpDDS, LPDIRECT3DDEVICE7* lplpD3DDevice) = nullptr;
 HRESULT STDMETHODCALLTYPE My_IDirect3D7_CreateDevice(IDirect3D7* This, REFCLSID rclsid, LPDIRECTDRAWSURFACE7 lpDDS, LPDIRECT3DDEVICE7* lplpD3DDevice)
@@ -140,9 +167,18 @@ HRESULT STDMETHODCALLTYPE My_IDirect3D7_CreateDevice(IDirect3D7* This, REFCLSID 
     Real_IDirect3DDevice7_SetTransform = device->lpVtbl->SetTransform;
     OriginalPointer_IDirect3DDevice7_SetTransform = device->lpVtbl->SetTransform;
 
+    // Hook Blt on the surface vtable (shared by every surface) to reach the movie blit.
+    if (lpDDS && Real_DDS_Blt == nullptr)
+    {
+      Real_DDS_Blt = lpDDS->lpVtbl->Blt;
+      OriginalPointer_DDS_Blt = lpDDS->lpVtbl->Blt;
+    }
+
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
     DetourAttach(&(PVOID&)Real_IDirect3DDevice7_EndScene, My_IDirect3DDevice7_EndScene);
+    if (Real_DDS_Blt)
+      DetourAttach(&(PVOID&)Real_DDS_Blt, My_DDS_Blt);
     // No viewport-narrow / pillarbox: full widescreen everywhere. The 4:3-pinned front-end clicks are
     // fixed by Moro's 2D-UI patch (PickingTracer), the 3D by the dist-scale. My_SetViewport/SetTransform
     // stay defined but unattached (tracerPillarboxWanted() is always false now).
