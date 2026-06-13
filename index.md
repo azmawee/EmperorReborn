@@ -133,7 +133,7 @@ Then,
    existing install.
 3. Pick a resolution, tick Fullscreen, hit Play.
 
-![The launcher]({{ "/screenshots/launcher-ui.png" | relative_url }})
+<p align="center"><img src="{{ '/screenshots/launcher-ui.png' | relative_url }}" alt="The launcher" width="360"></p>
 
 First-run setup is a one-time thing. After that it goes straight to the launcher. Full step by step
 is in the [install guide](https://github.com/azmawee/EmperorReborn/blob/main/INSTALL.txt).
