@@ -87,7 +87,7 @@ void runHooks()
   DetourTransactionCommit();
 
   patchDebugLog();
-  HookD3D7(settings.widescreen, settings.pillarbox, settings.screenWidth, settings.screenHeight);
+  HookD3D7(settings.widescreen, settings.pillarbox, settings.cutscene43, settings.screenWidth, settings.screenHeight);
   patchCdCheck();
   patchRedirectRegistry();
   patchD3D7ResolutionLimit();

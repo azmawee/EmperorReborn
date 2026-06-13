@@ -21,6 +21,7 @@ DWORD targetFps = 60;
 // dist-scale); here we only need the flag so EndScene can hand the render thread to that hook.
 static bool gWidescreen = false;
 static bool gPillarbox = false;          // launcher option: letterbox the 4:3 screens instead of stretching
+static bool gCutscene43 = false;         // launcher option: pillarbox the Bink cutscenes to 4:3
 static int gScreenWidth = 0;
 static int gScreenHeight = 0;
 static bool gClearedThisFrame = false;   // black-fill the backbuffer once per frame before narrowing
@@ -126,23 +127,34 @@ void* OriginalPointer_DDS_Blt = nullptr;
 HRESULT(STDMETHODCALLTYPE* Real_DDS_Blt)(IDirectDrawSurface7* This, LPRECT lpDestRect, IDirectDrawSurface7* lpDDSrc, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpFx) = nullptr;
 HRESULT STDMETHODCALLTYPE My_DDS_Blt(IDirectDrawSurface7* This, LPRECT lpDestRect, IDirectDrawSurface7* lpDDSrc, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpFx)
 {
-  if (gWidescreen && movieIsPlaying())
+  // The Bink cutscene reaches the screen as: 640x480 movie surface --(NULL dest rect)--> the full-screen
+  // surface, so DirectDraw stretches the 4:3 movie across the whole 16:9 target. When the option is on and
+  // a movie is playing, redirect that one blit into a centred 4:3 box and black-fill the side bars. The
+  // later full-screen 1:1 copy (src == dest size) is left alone, so the bars carry through to the screen.
+  if (gWidescreen && gCutscene43 && lpDDSrc && lpDestRect == nullptr && gScreenHeight > 0 && movieIsPlaying())
   {
-    static int n = 0;
-    if (n < 16)
+    DDSURFACEDESC2 td = {}; td.dwSize = sizeof(td);
+    DDSURFACEDESC2 sd = {}; sd.dwSize = sizeof(sd);
+    This->lpVtbl->GetSurfaceDesc(This, &td);
+    lpDDSrc->lpVtbl->GetSurfaceDesc(lpDDSrc, &sd);
+    if ((int)td.dwWidth == gScreenWidth && (int)td.dwHeight == gScreenHeight && sd.dwWidth < td.dwWidth)
     {
-      n++;
-      RECT d = {}, s = {};
-      if (lpDestRect) d = *lpDestRect;
-      if (lpSrcRect)  s = *lpSrcRect;
-      DDSURFACEDESC2 td = {}; td.dwSize = sizeof(td);
-      DDSURFACEDESC2 sd = {}; sd.dwSize = sizeof(sd);
-      This->lpVtbl->GetSurfaceDesc(This, &td);
-      if (lpDDSrc) lpDDSrc->lpVtbl->GetSurfaceDesc(lpDDSrc, &sd);
-      Log("MovieFix/Blt: This=%p (%lux%lu) destR=(%ld,%ld,%ld,%ld) src=%p (%lux%lu) srcR=(%ld,%ld,%ld,%ld) destNull=%d flags=0x%lX\n",
-          This, td.dwWidth, td.dwHeight, d.left, d.top, d.right, d.bottom,
-          lpDDSrc, sd.dwWidth, sd.dwHeight, s.left, s.top, s.right, s.bottom,
-          lpDestRect ? 0 : 1, dwFlags);
+      int w43 = gScreenHeight * 4 / 3;
+      if (w43 > 0 && w43 < gScreenWidth)
+      {
+        int xoff = (gScreenWidth - w43) / 2;
+        static bool logged = false;
+        if (!logged)
+        {
+          logged = true;
+          Log("MovieFix: pillarbox movie %lux%lu -> 4:3 box {%d,0,%d,%d} on %dx%d\n",
+              sd.dwWidth, sd.dwHeight, xoff, xoff + w43, gScreenHeight, gScreenWidth, gScreenHeight);
+        }
+        DDBLTFX fx = {}; fx.dwSize = sizeof(fx); fx.dwFillColor = 0;
+        Real_DDS_Blt(This, nullptr, nullptr, nullptr, DDBLT_COLORFILL | DDBLT_WAIT, &fx);
+        RECT box = { xoff, 0, xoff + w43, gScreenHeight };
+        return Real_DDS_Blt(This, &box, lpDDSrc, lpSrcRect, dwFlags, lpFx);
+      }
     }
   }
   return Real_DDS_Blt(This, lpDestRect, lpDDSrc, lpSrcRect, dwFlags, lpFx);
@@ -228,10 +240,11 @@ HRESULT WINAPI MyDirectDrawCreateEx(GUID FAR* lpGuid, LPVOID* lplpDD, REFIID iid
 }
 
 
-void HookD3D7(bool widescreen, bool pillarbox, int screenWidth, int screenHeight)
+void HookD3D7(bool widescreen, bool pillarbox, bool cutscene43, int screenWidth, int screenHeight)
 {
   gWidescreen = widescreen;
   gPillarbox = pillarbox;
+  gCutscene43 = cutscene43;
   gScreenWidth = screenWidth;
   gScreenHeight = screenHeight;
 
