@@ -55,10 +55,11 @@ was the exact part nobody had labelled.
 
 ## The thing that finally worked
 
-Emperor runs on Westwood 3D, the same engine as Command and Conquer: Renegade, which EA released the
-source for in early 2025. I cannot copy that code, but I can read it to understand how the engine
-thinks, and the key fact is this, in this engine the rendering and the mouse picking both go through
-one shared camera value. They are not independent. Move the one shared thing and they move together.
+Emperor's engine is Xanadu, built by Intelligent Games, the studio that also did Dune 2000, not the
+Command and Conquer engine. Its 3D rendering, though, runs on Westwood 3D (W3D), the same renderer as
+Command and Conquer: Renegade, which EA released the source for in early 2025. I cannot copy that code,
+but I can read it to understand how that renderer thinks, and the key fact is this, in W3D the
+rendering and the mouse picking both go through one shared camera value. They are not independent. Move the one shared thing and they move together.
 
 Emperor's camera does not have a normal field of view setting. It has a focal "distance", and the
 width of the view is the screen width divided by that distance. Scale that distance by the right
