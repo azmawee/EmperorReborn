@@ -201,18 +201,29 @@ int getMainMonitorHeight()
 // hooks so the battlefield renders properly wide instead of stretched. Width/height of 0 is a
 // special "match the desktop" entry (the old behaviour: sharpest / fills the screen natively, but
 // the in-game fonts get small on big monitors).
-struct Resolution { int width; int height; bool widescreen; const wchar_t* label; };
+// The "Upscale ... big UI" entries keep the desktop at its native size and render at a lower 16:9
+// resolution, stretching the frame up to fill the screen on present (like dgVoodoo). That keeps the
+// in-game fonts large and readable on a big monitor without switching the display mode. These are the
+// cleanest answer to "text too small at high resolution".
+// The K tier is the render resolution, not the screen: a lower render gives a bigger (softer) UI, a
+// higher render gives a sharper (smaller) UI. They are deliberately kept below true 4K, since rendering
+// at the screen's own resolution would be a 1:1 present and bring the tiny fonts straight back. Pick the
+// tier at or below your monitor: 4K render on a 4K screen would not upscale.
+struct Resolution { int width; int height; bool widescreen; bool upscale; const wchar_t* label; };
 const Resolution resolutions[] =
 {
-  { 640, 480, false, L"640 x 480" },
-  { 800, 600, false, L"800 x 600" },
-  { 1024, 768, false, L"1024 x 768" },
-  { 1152, 864, false, L"1152 x 864" },
-  { 1280, 720, true, L"1280 x 720 (widescreen)" },
-  { 1600, 900, true, L"1600 x 900 (widescreen)" },
-  { 1920, 1080, true, L"1920 x 1080 (widescreen)" },
-  { 2560, 1440, true, L"2560 x 1440 (widescreen)" },
-  { 0, 0, false, L"Desktop" },
+  { 640, 480, false, false, L"640 x 480" },
+  { 800, 600, false, false, L"800 x 600" },
+  { 1024, 768, false, false, L"1024 x 768" },
+  { 1152, 864, false, false, L"1152 x 864" },
+  { 1280, 720, true, false, L"1280 x 720 (widescreen)" },
+  { 1600, 900, true, false, L"1600 x 900 (widescreen)" },
+  { 1920, 1080, true, false, L"1920 x 1080 (widescreen)" },
+  { 2560, 1440, true, false, L"2560 x 1440 (widescreen)" },
+  { 2560, 1440, true, true, L"Upscale 4K, big UI" },
+  { 1920, 1080, true, true, L"Upscale 2K, big UI" },
+  { 1280, 720, true, true, L"Upscale 1K, big UI" },
+  { 0, 0, false, false, L"Desktop" },
 };
 
 
@@ -260,7 +271,10 @@ void loadAndApplySettings()
   int resolutionIndex = 4; // default to 1280x720 (lowest widescreen) if the saved value isn't in the list
   for (int i = 0; i < int(std::size(resolutions)); i++)
   {
-    if (resolutions[i].width == settings.screenWidth && resolutions[i].height == settings.screenHeight)
+    // Match on upscale too, otherwise the native and "(upscale, big UI)" entries that share a
+    // resolution (e.g. 1920x1080) are indistinguishable and the wrong one gets selected.
+    if (resolutions[i].width == settings.screenWidth && resolutions[i].height == settings.screenHeight
+        && resolutions[i].upscale == settings.upscaleToDesktop)
     {
       resolutionIndex = i;
       break;
@@ -312,6 +326,7 @@ LRESULT onResolutionChanged(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
     settings.screenWidth = resolutions[index].width;
     settings.screenHeight = resolutions[index].height;
     settings.widescreen = resolutions[index].widescreen;
+    settings.upscaleToDesktop = resolutions[index].upscale;
     settings.writeSettings();
   }
   return CallWindowProc(defWndProc, hwnd, message, wParam, lParam);
@@ -579,7 +594,7 @@ int wmain(int argc, wchar_t* argv[])
     int x = 30;
     int y = yMax + 50;
 
-    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn v2.4", WS_CHILD | WS_VISIBLE, x, y, 300, 20, window, nullptr, nullptr, nullptr);
+    CreateWindowEx(0, WC_STATIC, L"Emperor Reborn v2.5", WS_CHILD | WS_VISIBLE, x, y, 300, 20, window, nullptr, nullptr, nullptr);
     y += 24;
 
     githubLink = CreateWindowEx(0, WC_STATIC, L"github.com/azmawee", WS_CHILD | WS_VISIBLE | SS_NOTIFY, x, y, 300, 20, window, nullptr, nullptr, nullptr);

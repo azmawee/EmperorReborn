@@ -37,6 +37,12 @@ public:
   // 4:3, since the movies are 4:3 and stretching distorts them; players who prefer the wide look turn it off.
   bool cutscene43 = true;
 
+  // Render at ScreenWidth/ScreenHeight but keep the Windows desktop at its native resolution, stretching
+  // the rendered frame up to fill the screen on present (the way dgVoodoo does it). Lets a 4K user keep a
+  // crisp native desktop while the in-game fonts stay large. When false we instead switch the display mode
+  // to ScreenWidth/ScreenHeight and let the monitor do the upscaling (reshuffles the desktop).
+  bool upscaleToDesktop = false;
+
 public:
   void readSettings()
   {
@@ -95,6 +101,10 @@ public:
     if (cutscene43Temp)
       cutscene43 = *cutscene43Temp == "1";
 
+    std::optional<std::string> upscaleToDesktopTemp = regReadString(key, "UpscaleToDesktop");
+    if (upscaleToDesktopTemp)
+      upscaleToDesktop = *upscaleToDesktopTemp == "1";
+
     RegCloseKey(key);
   }
 
@@ -115,6 +125,7 @@ public:
     regWriteString(key, "Widescreen", widescreen ? "1" : "0");
     regWriteString(key, "Pillarbox", pillarbox ? "1" : "0");
     regWriteString(key, "Cutscene43", cutscene43 ? "1" : "0");
+    regWriteString(key, "UpscaleToDesktop", upscaleToDesktop ? "1" : "0");
 
     RegCloseKey(key);
   }
