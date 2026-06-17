@@ -90,7 +90,7 @@ something slipped in. The official SHA256 hashes are published on the
 with
 
 ```powershell
-Get-FileHash .\EmperorReborn-v2.4.zip -Algorithm SHA256
+Get-FileHash .\EmperorReborn-v2.5.zip -Algorithm SHA256
 ```
 
 and compare it to the published hash. The zip also carries a `SHA256SUMS.txt` listing the hashes of the

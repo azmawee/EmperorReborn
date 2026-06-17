@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <windowsx.h>
 #include "GameExeImports.hpp"
 #include <stdio.h>
 #include <detours.h>
@@ -9,6 +10,14 @@ static volatile bool focus = true;
 static bool emperorLauncherDoFullscreen = 1;
 static volatile HWND backgroundWindowHandle = nullptr;
 static volatile DWORD backgroundWindowThreadId = 0;
+
+// Upscale mode: render at gRenderWidth/gRenderHeight but keep the desktop native and size the game window
+// to the whole screen. The render target is stretched to full screen on present (see HookD3D7). Because the
+// window is bigger than the game thinks it is, incoming mouse coords must be scaled back down to the render
+// resolution or every click lands in the wrong place.
+static bool emperorLauncherUpscale = false;
+static int gRenderWidth = 0;
+static int gRenderHeight = 0;
 
 
 PFN_wndProcDuneIII wndProcDuneIIIOrig = wndProcDuneIII;
@@ -37,6 +46,31 @@ int __stdcall wndProcDuneIIIPatched(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
   if (Msg == WM_DESTROY)
     TerminateProcess(GetCurrentProcess(), 0);
 
+  // Upscale mode: the window covers the whole (e.g. 4K) screen but the game thinks the client area is the
+  // render resolution. Scale the mouse position in the message down from screen space to render space so the
+  // cursor and clicks line up with the stretched-up image. WM_MOUSEWHEEL carries screen coords / a wheel
+  // delta, not a client position, so it is left alone.
+  if (emperorLauncherUpscale && gRenderWidth > 0 && gRenderHeight > 0)
+  {
+    bool isClientMouseMsg =
+      Msg == WM_MOUSEMOVE ||
+      Msg == WM_LBUTTONDOWN || Msg == WM_LBUTTONUP || Msg == WM_LBUTTONDBLCLK ||
+      Msg == WM_RBUTTONDOWN || Msg == WM_RBUTTONUP || Msg == WM_RBUTTONDBLCLK ||
+      Msg == WM_MBUTTONDOWN || Msg == WM_MBUTTONUP || Msg == WM_MBUTTONDBLCLK;
+
+    if (isClientMouseMsg)
+    {
+      int screenW = GetSystemMetrics(SM_CXSCREEN);
+      int screenH = GetSystemMetrics(SM_CYSCREEN);
+      if (screenW > 0 && screenH > 0)
+      {
+        int x = GET_X_LPARAM(lParam) * gRenderWidth / screenW;
+        int y = GET_Y_LPARAM(lParam) * gRenderHeight / screenH;
+        lParam = MAKELPARAM(x, y);
+      }
+    }
+  }
+
   return wndProcDuneIIIOrig(hWnd, Msg, wParam, lParam);
 }
 
@@ -47,6 +81,13 @@ BOOL __cdecl setWindowStyleAndDrainMessagesPatched(HWND hWnd, int width, int hei
   {
     SetWindowLongA(hWnd, GWL_STYLE, WS_POPUP);
     SetParent(hWnd, backgroundWindowHandle);
+
+    if (emperorLauncherUpscale)
+    {
+      // Cover the whole screen so the stretched render fills it; the desktop is left at its native res.
+      width = GetSystemMetrics(SM_CXSCREEN);
+      height = GetSystemMetrics(SM_CYSCREEN);
+    }
 
     int left = GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2;
     SetWindowPos(hWnd, nullptr, left, 0, width, height, SWP_SHOWWINDOW);
@@ -223,7 +264,7 @@ void setFullscreenDisplayMode(int width, int height)
   Log("ChangeDisplaySettings to %dx%d returned %ld\n", width, height, result);
 }
 
-void patchWindowManagement(bool doFullscreen, bool doCursorCapture, int width, int height)
+void patchWindowManagement(bool doFullscreen, bool doCursorCapture, bool upscaleToDesktop, int width, int height)
 {
   DetourTransactionBegin();
   DetourUpdateThread(GetCurrentThread());
@@ -232,11 +273,18 @@ void patchWindowManagement(bool doFullscreen, bool doCursorCapture, int width, i
   DetourTransactionCommit();
 
   emperorLauncherDoFullscreen = doFullscreen;
+  emperorLauncherUpscale = upscaleToDesktop;
+  gRenderWidth = width;
+  gRenderHeight = height;
 
   if (emperorLauncherDoFullscreen)
   {
-    // Must happen before creating the background window so it maximizes to the new resolution.
-    setFullscreenDisplayMode(width, height);
+    // Upscale mode keeps the desktop at its native resolution and stretches the rendered frame up on
+    // present instead, so skip the display-mode switch. Otherwise switch the desktop to the game's
+    // resolution and let the monitor scale it. Must happen before creating the background window so it
+    // maximizes to the right resolution.
+    if (!emperorLauncherUpscale)
+      setFullscreenDisplayMode(width, height);
 
     createBackgroundWindow();
     std::thread([]() { backgroundWindowLoop(); }).detach();

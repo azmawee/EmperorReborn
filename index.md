@@ -13,7 +13,7 @@ image: /icon/og-card.png
   "applicationCategory": "GameApplication",
   "operatingSystem": "Windows 10, Windows 11",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "softwareVersion": "2.4",
+  "softwareVersion": "2.5",
   "downloadUrl": "https://github.com/azmawee/EmperorReborn/releases/latest",
   "url": "https://azmawee.github.io/EmperorReborn/",
   "author": { "@type": "Person", "name": "azmawee" },
@@ -43,15 +43,39 @@ Every release is checksummed so you can confirm a download is the real build and
 with something slipped in. These are the official SHA256 hashes for the latest release, served over
 HTTPS from this site. If a copy you got from anywhere does not match, do not run it.
 
-Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.4.zip -Algorithm SHA256` (or
-`certutil -hashfile EmperorReborn-v2.4.zip SHA256`) and compare it to the hashes below. Each zip also
+Check the zip in PowerShell with `Get-FileHash .\EmperorReborn-v2.5.zip -Algorithm SHA256` (or
+`certutil -hashfile EmperorReborn-v2.5.zip SHA256`) and compare it to the hashes below. Each zip also
 carries a `SHA256SUMS.txt` listing the two executables, so you can verify those after extracting.
 
 ```
-zip                b9e451dbea47c7369c728ae0a9a9fee7364b62f0c9903eb5c3d44e2cc08c1659
-EmperorReborn.exe  8dc3aa7f6027e5852983ca1a340ada4a89dac6ee8e603a0f73194f8fcecc9872
-EmperorHooks.dll   84e066b50b524968e77b3e5bf582948985ed3fd64e487773e8a55068ab5c6c71
+zip                d029a9c0820b91855504066705fd95ae51cddcfab0a5df6aad4a336a6875fd81
+EmperorReborn.exe  a8e306c4a01e77a6e3f541ad106fd9574a799b8263c2f66b277398adc6e82830
+EmperorHooks.dll   9b4378738e1e404782dfaec9f5e8a1bb6d5dcc75d976468f5f82dbd3f5f37c0b
 ```
+
+## Antivirus false positive
+
+Some antivirus engines flag the download as a trojan. It is a false positive, and here is exactly why.
+
+The launcher injects a small DLL into the game to patch its DirectX 7 renderer at runtime, that is how
+the widescreen and HUD fixes work, and the exe is not code-signed. Runtime DLL injection into another
+process is also something malware does, so heuristic and machine-learning scanners flag it on the
+*pattern* of what it does, not on any actual malicious code, because there is none.
+
+The detection names give the game away. They are all generic, things like `Gen:Variant`,
+`Win32:MalwareX-gen`, `Mal/Generic-S` and `Malicious (moderate confidence)`. Not one of them names a
+real malware family with a known payload, which is what you would see if this were genuinely infected.
+The count also looks bigger than it is because many of those engines share one scanner, the single
+BitDefender `Doris` detection alone shows up under seven different vendor names.
+
+You can see the full report for the current release here,
+[VirusTotal report for EmperorReborn-v2.5.zip](https://www.virustotal.com/gui/file/d029a9c0820b91855504066705fd95ae51cddcfab0a5df6aad4a336a6875fd81).
+
+You do not have to take my word for any of this. The entire source is on
+[GitHub](https://github.com/azmawee/EmperorReborn). Read it, and if you would rather not trust my
+binary at all, compile your own `EmperorReborn.exe` from source with the included `package.ps1` build
+script and run that instead. Nothing is hidden, there are no closed blobs, and a clean build from the
+public source is something no real trojan could offer.
 
 ## Why this exists
 
@@ -88,14 +112,26 @@ bug that nearly beat me.
 **Fullscreen scaling.** Pick a resolution and it fills the monitor instead of pillarboxing. On a 4K
 screen the game looks like a real fullscreen game again instead of a postage stamp.
 
+**Big, readable UI on a 4K screen (upscale modes).** Rendering at full 4K makes the menus, fonts and
+tooltips tiny, the game's interface is fixed-size art and does not scale up, so the higher the
+resolution the smaller it gets. The new "Upscale 4K", "Upscale 2K" and "Upscale 1K" presets fix that
+the same way dgVoodoo does, the game renders at a lower resolution and the whole frame is then stretched
+up to fill your screen, so everything including the text gets bigger and stays easy to read. Your
+Windows desktop is left at its native resolution the whole time, nothing is switched or rearranged. The
+difference from dgVoodoo is that this is built straight into the launcher, there is no separate wrapper
+to install or configure, and it works together with the widescreen and HUD fixes out of the box. The
+number is the render resolution, not your screen, so pick the tier at or below your monitor. A lower
+number renders smaller for a bigger, softer UI, a higher number is sharper with a slightly smaller UI.
+On a 4K monitor "Upscale 2K" is the sweet spot.
+
 **Cutscene movies kept at 4:3.** The FMV cutscenes were made for 4:3, so stretching them across a 16:9
 screen makes everyone look fat. By default they now play at their original 4:3 aspect with black bars at
 the sides, the way they were meant to look. There is a launcher tickbox if you would rather turn the
 bars off and stretch the movies to fill the screen.
 
-**Pick your resolution in the launcher.** 16:9 widescreen (1280x720, 1600x900, 1920x1080, 2560x1440)
-or the original 4:3 modes (640x480 up to 1152x864), or match the desktop. It defaults to 1280x720
-widescreen now. The choice is saved between runs.
+**Pick your resolution in the launcher.** 16:9 widescreen (1280x720, 1600x900, 1920x1080, 2560x1440),
+the big-UI upscale modes above, the original 4:3 modes (640x480 up to 1152x864), or match the desktop.
+It defaults to 1280x720 widescreen now. The choice is saved between runs.
 
 **Connect by hostname or DDNS in multiplayer.** Type something like `yourname.duckdns.org` instead
 of a raw IP. Home connections rotate their public IP, and I got tired of looking it up and sending
@@ -144,11 +180,16 @@ DDNS only keeps the address stable. You still have to forward the port yourself.
 ## On a 4K monitor
 
 Do not use the "Desktop (match screen)" option on 4K. It renders at full 4K and the original fonts
-and tooltips end up too small to read. Pick a set resolution and tick Fullscreen so it scales up,
+and tooltips end up too small to read. Use one of the upscale modes, which render lower and stretch up
+to fill the screen so the text stays large, and leave your desktop at 4K the whole time,
 
-- **1280x720 (widescreen) + Fullscreen** is the sweet spot, real 16:9 with text that stays readable.
-- **1920x1080 (widescreen) + Fullscreen** if you want it sharper and don't mind smaller UI.
-- **1024x768 + Fullscreen** if you would rather keep the original 4:3 look.
+- **Upscale 2K, big UI** is the sweet spot on a 4K screen, large readable text and a good balance of
+  sharpness.
+- **Upscale 1K, big UI** if you want the biggest UI and do not mind it being a little softer.
+- **Upscale 4K, big UI** if you want it sharper and do not mind a slightly smaller UI.
+
+If you would rather not upscale at all, a plain **1280x720 (widescreen) + Fullscreen** also keeps the
+text readable by switching the display mode and letting the monitor scale it.
 
 If it still sits in a small box, your GPU is set to "no scaling". Set scaling to Full-screen in
 your GPU control panel (NVIDIA Control Panel under *Adjust desktop size and position*; AMD and Intel
@@ -180,10 +221,11 @@ existing wheybags install with no reinstall. A fresh setup from discs only happe
 find a compatible install.
 
 **Windows Security or antivirus is complaining.**
-An unsigned exe trips SmartScreen, and a launcher that injects a DLL into the game can trip antivirus
-heuristics too even though it is clean. Check the download against the SHA256 above first, then click
-More info then Run anyway. Add a Windows Security folder exclusion only as a last resort, if it keeps
-getting quarantined.
+An unsigned exe trips SmartScreen, and a launcher that injects a DLL into the game trips antivirus
+heuristics too even though it is clean. This is a known false positive, see the
+[Antivirus false positive](#antivirus-false-positive) section above for the full explanation. Check
+the download against the SHA256 first, then click More info then Run anyway. Add a Windows Security
+folder exclusion only as a last resort, if it keeps getting quarantined.
 
 **Is multiplayer Westwood Online?**
 No, that shut down. This is direct IP, with hostname and DDNS support so you do not have to
@@ -196,9 +238,10 @@ original look? Pick a 4:3 resolution and it runs exactly like it always did. I a
 anything.
 
 **Is the binary safe?**
-Source is on GitHub, build it yourself if you would rather. Each release has SHA256 hashes. Windows
-SmartScreen will warn about an unsigned exe from an unknown publisher, that is normal, More info,
-Run anyway.
+Yes. Some antivirus engines flag it as a false positive because it injects a DLL to patch the game,
+see the [Antivirus false positive](#antivirus-false-positive) section for why. Source is on GitHub,
+build it yourself if you would rather. Each release has SHA256 hashes. Windows SmartScreen will warn
+about an unsigned exe from an unknown publisher, that is normal, More info, Run anyway.
 
 ## Source
 

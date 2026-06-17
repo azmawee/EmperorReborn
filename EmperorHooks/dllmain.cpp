@@ -87,11 +87,11 @@ void runHooks()
   DetourTransactionCommit();
 
   patchDebugLog();
-  HookD3D7(settings.widescreen, settings.pillarbox, settings.cutscene43, settings.screenWidth, settings.screenHeight);
+  HookD3D7(settings.widescreen, settings.pillarbox, settings.cutscene43, settings.upscaleToDesktop, settings.screenWidth, settings.screenHeight);
   patchCdCheck();
   patchRedirectRegistry();
   patchD3D7ResolutionLimit();
-  patchWindowManagement(settings.fullscreen, !settings.disableCursorCapture, settings.screenWidth, settings.screenHeight);
+  patchWindowManagement(settings.fullscreen, !settings.disableCursorCapture, settings.upscaleToDesktop, settings.screenWidth, settings.screenHeight);
 
   // Cutscene (Bink) 4:3 pillarbox. Diagnostic-only for now: identifies the movie blit and confirms the
   // Bink path in emperor.txt while a cutscene plays. Safe to call regardless of the setting.

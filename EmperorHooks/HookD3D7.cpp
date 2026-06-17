@@ -22,9 +22,15 @@ DWORD targetFps = 60;
 static bool gWidescreen = false;
 static bool gPillarbox = false;          // launcher option: letterbox the 4:3 screens instead of stretching
 static bool gCutscene43 = false;         // launcher option: pillarbox the Bink cutscenes to 4:3
-static int gScreenWidth = 0;
+static bool gUpscale = false;            // launcher option: render at gScreenWidth/Height, stretch to the full desktop on present
+static int gScreenWidth = 0;             // the render resolution (what the game thinks it is)
 static int gScreenHeight = 0;
 static bool gClearedThisFrame = false;   // black-fill the backbuffer once per frame before narrowing
+
+// In upscale mode the game renders into this offscreen surface (the render target passed to CreateDevice)
+// at the render resolution, then blits it onto the primary to present. We catch that one blit and stretch
+// it to fill the whole (e.g. 4K) desktop, so the low-res frame fills the screen and the fonts stay large.
+static IDirectDrawSurface7* gRenderTarget = nullptr;
 
 
 // Limit FPS to 60, some effects in the game just don't work at high FPS.
@@ -127,6 +133,30 @@ void* OriginalPointer_DDS_Blt = nullptr;
 HRESULT(STDMETHODCALLTYPE* Real_DDS_Blt)(IDirectDrawSurface7* This, LPRECT lpDestRect, IDirectDrawSurface7* lpDDSrc, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpFx) = nullptr;
 HRESULT STDMETHODCALLTYPE My_DDS_Blt(IDirectDrawSurface7* This, LPRECT lpDestRect, IDirectDrawSurface7* lpDDSrc, LPRECT lpSrcRect, DWORD dwFlags, LPDDBLTFX lpFx)
 {
+  // Upscale present: the source is the render target (captured at CreateDevice), so this blit is the
+  // backbuffer -> primary present. The window is sized to the whole desktop, so rewrite the dest rect to
+  // the full screen, stretching the low-res frame up to fill it. A plain pointer compare, no per-blit
+  // GetSurfaceDesc, so the cost on every other blit is one branch.
+  if (gUpscale && lpDDSrc && lpDDSrc == gRenderTarget)
+  {
+    int screenW = GetSystemMetrics(SM_CXSCREEN);
+    int screenH = GetSystemMetrics(SM_CYSCREEN);
+    if (screenW > 0 && screenH > 0)
+    {
+      static bool logged = false;
+      if (!logged)
+      {
+        logged = true;
+        RECT* d = lpDestRect;
+        Log("UpscaleFix: present blit (render %dx%d) -> full screen %dx%d, game dest {%ld,%ld,%ld,%ld}\n",
+            gScreenWidth, gScreenHeight, screenW, screenH,
+            d ? d->left : 0, d ? d->top : 0, d ? d->right : 0, d ? d->bottom : 0);
+      }
+      RECT full = { 0, 0, screenW, screenH };
+      return Real_DDS_Blt(This, &full, lpDDSrc, lpSrcRect, dwFlags, lpFx);
+    }
+  }
+
   // The Bink cutscene reaches the screen as: 640x480 movie surface --(NULL dest rect)--> the full-screen
   // surface, so DirectDraw stretches the 4:3 movie across the whole 16:9 target. When the option is on and
   // a movie is playing, redirect that one blit into a centred 4:3 box and black-fill the side bars. The
@@ -192,6 +222,9 @@ HRESULT STDMETHODCALLTYPE My_IDirect3D7_CreateDevice(IDirect3D7* This, REFCLSID 
       OriginalPointer_DDS_Blt = lpDDS->lpVtbl->Blt;
     }
 
+    // Remember the render target so the upscale present blit can be identified by its source surface.
+    gRenderTarget = lpDDS;
+
     DetourTransactionBegin();
     DetourUpdateThread(GetCurrentThread());
     DetourAttach(&(PVOID&)Real_IDirect3DDevice7_EndScene, My_IDirect3DDevice7_EndScene);
@@ -240,11 +273,12 @@ HRESULT WINAPI MyDirectDrawCreateEx(GUID FAR* lpGuid, LPVOID* lplpDD, REFIID iid
 }
 
 
-void HookD3D7(bool widescreen, bool pillarbox, bool cutscene43, int screenWidth, int screenHeight)
+void HookD3D7(bool widescreen, bool pillarbox, bool cutscene43, bool upscaleToDesktop, int screenWidth, int screenHeight)
 {
   gWidescreen = widescreen;
   gPillarbox = pillarbox;
   gCutscene43 = cutscene43;
+  gUpscale = upscaleToDesktop;
   gScreenWidth = screenWidth;
   gScreenHeight = screenHeight;
 
