@@ -473,23 +473,44 @@ int wmain(int argc, wchar_t* argv[])
   std::string gameExeMd5 = getMd5OfFile(installDir + "\\Game.exe");
   std::string_view desiredMd5 = "7dc4fda2f6b7e8a6b70e846686a81938";
 
-  if (gameExeMd5 != desiredMd5)
+  if (gameExeMd5.empty())
   {
-    if (MessageBoxA(nullptr, ("Install to " + installDir + "?").c_str(), "Game data not found or invalid", MB_OKCANCEL) != IDOK)
+    // No Game.exe at all - nothing to run, so we must install (or quit).
+    if (MessageBoxA(nullptr, ("Game.exe was not found in " + installDir + ".\n\nInstall the game here now?").c_str(),
+                    "Game not found", MB_OKCANCEL | MB_ICONQUESTION) != IDOK)
       return 0;
 
     installEmperor(installDir);
 
-    gameExeMd5 = getMd5OfFile(installDir + "\\Game.exe");
-    if (gameExeMd5 != desiredMd5)
+    if (getMd5OfFile(installDir + "\\Game.exe").empty())
     {
       MessageBoxA(nullptr, "Installation failed!", "Error", MB_OK);
       return 1;
     }
-    else
+  }
+  else if (gameExeMd5 != desiredMd5)
+  {
+    // Game.exe exists but is not the original v1.09 build the patches are written for (e.g. another
+    // mod's patched exe, or a different patch level). Warn, but let the user run anyway if they want.
+    int choice = MessageBoxA(nullptr,
+        "Your Game.exe is not the original v1.09 version this launcher's features are built for "
+        "(checksum mismatch - it may be from another mod or a different patch).\n\n"
+        "Widescreen and the other tweaks may not work and the game could crash or be unstable. "
+        "You can proceed at your own risk.\n\n"
+        "Yes - run anyway (at your own risk)\n"
+        "No - (re)install the correct Game.exe\n"
+        "Cancel - quit",
+        "Game.exe version mismatch", MB_YESNOCANCEL | MB_ICONWARNING);
+
+    if (choice == IDCANCEL)
+      return 0;
+    if (choice == IDNO)
     {
-      MessageBoxA(nullptr, "Installation successful!", "Success", MB_OK);
+      installEmperor(installDir);
+      if (getMd5OfFile(installDir + "\\Game.exe") != desiredMd5)
+        MessageBoxA(nullptr, "Game.exe still does not match the expected version - continuing anyway.", "Note", MB_OK);
     }
+    // Yes: fall through and launch with the current Game.exe.
   }
 
   SetCurrentDirectoryA(installDir.c_str());
