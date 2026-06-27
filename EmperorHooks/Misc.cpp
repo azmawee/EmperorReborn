@@ -3,6 +3,9 @@
 
 std::string ssprintf(const char* format, ...)
 {
+  if (format && strstr(format, "%n"))
+    return "FORMAT_ERROR";
+
   std::string result;
   result.resize(1024);
 
