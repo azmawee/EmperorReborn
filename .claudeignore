@@ -1,0 +1,32 @@
+# Files and folders Claude Code should treat as out of scope.
+# Glob/Grep already skip what .gitignore covers. This is the explicit
+# "do not bother opening" list for low-value, noisy, or large binary junk.
+
+# Scratch / reference screenshots that are not site or README assets.
+screenshots/virustotal-*.png
+
+# Build output and logs (mirrored from .gitignore).
+[Rr]elease/
+[Dd]ebug/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.log
+*.tlog
+
+# Packaged release zips.
+/dist/
+*.zip
+
+# Local reverse-engineering scratch and notes.
+/_scratch/
+/dev-notes/
+*.idb
+*.i64
+
+# Copyrighted third-party binaries, never read or commit.
+EM109EN.EXE
+EM109EN.DLL
+/data/
+/disks/
