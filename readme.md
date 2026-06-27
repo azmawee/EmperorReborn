@@ -31,6 +31,10 @@ edit the registry by hand.
   works.
 - **Fullscreen scaling.** Your chosen resolution fills the whole monitor instead of pillarboxing.
   On a 4K screen the original resolutions are unusably tiny otherwise.
+- **Upscale for big, readable UI at 4K.** On a 4K monitor the sharp modes make the HUD and text tiny.
+  The "Upscale ... big UI" entries keep the desktop at its native resolution and render at a lower
+  16:9 size (2560x1440, 1920x1080 or 1280x720), then stretch that frame to fill the screen. Same big
+  interface as a low resolution, without the monitor switching display modes.
 - **Cutscene movies kept at 4:3.** The FMV cutscenes are 4:3, so widescreen stretched them fat. They now
   play at their original aspect with black bars by default; a launcher tickbox turns the bars off and
   stretches them wide if you prefer.
@@ -66,7 +70,11 @@ First-run setup happens once. There is a plain-English walkthrough in
 ### Resolution
 
 The launcher saves your pick. Lower resolutions give bigger, more readable text; higher ones are
-sharper with smaller UI.
+sharper with smaller UI. The three "Upscale ... big UI" modes work differently, they keep your
+desktop at its native resolution (so the monitor does not switch display modes), render the game at a
+lower 16:9 size, then stretch that frame to fill the screen. That gives the big readable interface of
+a low resolution on a high-resolution desktop. Pick the tier at or below your monitor, a 4K render on
+a 4K screen would not upscale.
 
 | Resolution | Notes |
 |---|---|
@@ -76,11 +84,15 @@ sharper with smaller UI.
 | `2560 x 1440` | Widescreen, sharpest |
 | `640 x 480` to `1152 x 864` | Original 4:3 modes |
 | Desktop (match screen) | Native sharpness, but the UI gets small on 4K |
+| `Upscale 4K, big UI` | Renders at 2560x1440 and stretches to fill the screen, big UI |
+| `Upscale 2K, big UI` | Renders at 1920x1080 and stretches, bigger UI |
+| `Upscale 1K, big UI` | Renders at 1280x720 and stretches, biggest UI |
 
-On a 4K monitor, skip "Desktop" and use 1280x720 widescreen (or 1920x1080 if you want it sharper)
-with Fullscreen ticked. If the image still sits centered in a small box, your GPU is set to "no
-scaling": switch it to Full-screen in the NVIDIA Control Panel (*Adjust desktop size and position*),
-or the AMD/Intel equivalent.
+On a 4K monitor the "Upscale ... big UI" modes are the comfortable pick, they give big readable UI
+without resizing the desktop. Otherwise skip "Desktop" and use 1280x720 widescreen (or 1920x1080 if
+you want it sharper) with Fullscreen ticked. If the image still sits centered in a small box, your GPU
+is set to "no scaling", switch it to Full-screen in the NVIDIA Control Panel (*Adjust desktop size and
+position*), or the AMD/Intel equivalent.
 
 ## Verify your download
 
