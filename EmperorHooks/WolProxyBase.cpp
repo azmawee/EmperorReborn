@@ -35,12 +35,20 @@ int WolProxyBase::recvfrom_override(SOCKET s, char* buf, int len, int flags, str
   {
     ReceivedPacket& packet = it->second.front();
 
-    release_assert(len >= int(it->second.front().data.size()));
+    if (len < int(packet.data.size()))
+    {
+      WSASetLastError(WSAEMSGSIZE);
+      return SOCKET_ERROR;
+    }
     memcpy(buf, packet.data.data(), packet.data.size());
 
     if (from)
     {
-      release_assert(*fromlen >= sizeof(sockaddr_in));
+      if (*fromlen < int(sizeof(sockaddr_in)))
+      {
+        WSASetLastError(WSAEFAULT);
+        return SOCKET_ERROR;
+      }
       memcpy(from, &packet.originalFrom, sizeof(sockaddr_in));
       *fromlen = sizeof(sockaddr_in);
     }
