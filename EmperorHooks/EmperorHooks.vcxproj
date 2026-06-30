@@ -119,6 +119,7 @@ nmake</Command>
     <ClInclude Include="PatchRegistry.hpp" />
     <ClInclude Include="PatchWindowManagement.hpp" />
     <ClInclude Include="ResolveHost.hpp" />
+    <ClInclude Include="SmoothScroll.hpp" />
     <ClInclude Include="WolCommon.hpp" />
     <ClInclude Include="WolIrcServer.hpp" />
     <ClInclude Include="WolProxyBase.hpp" />
@@ -141,6 +142,7 @@ nmake</Command>
     <ClCompile Include="PickingTracer.cpp" />
     <ClCompile Include="InGameHudFix.cpp" />
     <ClCompile Include="MovieFix.cpp" />
+    <ClCompile Include="SmoothScroll.cpp" />
     <ClCompile Include="ResolveHost.cpp" />
     <ClCompile Include="WolIrcServer.cpp" />
     <ClCompile Include="WolProxyBase.cpp" />

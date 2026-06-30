@@ -248,6 +248,7 @@ HWND pauseOnStartupCheckbox = nullptr;
 HWND forceCursorVisibleCheckbox = nullptr;
 HWND disableCursorCaptureCheckbox = nullptr;
 HWND cutscene43Checkbox = nullptr;
+HWND smoothScrollCheckbox = nullptr;
 
 bool playClicked = false;
 
@@ -289,6 +290,7 @@ void loadAndApplySettings()
   SendMessageA(forceCursorVisibleCheckbox, BM_SETCHECK, settings.forceCursorVisible ? BST_CHECKED : BST_UNCHECKED, 0);
   SendMessageA(disableCursorCaptureCheckbox, BM_SETCHECK, settings.disableCursorCapture ? BST_CHECKED : BST_UNCHECKED, 0);
   SendMessageA(cutscene43Checkbox, BM_SETCHECK, settings.cutscene43 ? BST_CHECKED : BST_UNCHECKED, 0);
+  SendMessageA(smoothScrollCheckbox, BM_SETCHECK, settings.smoothScroll ? BST_CHECKED : BST_UNCHECKED, 0);
 
   refreshDerivedState();
 }
@@ -313,6 +315,14 @@ LRESULT onFullscreenCheckboxClicked(HWND hwnd, UINT message, WPARAM wParam, LPAR
 LRESULT onCutscene43CheckboxClicked(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   settings.cutscene43 = SendMessage(cutscene43Checkbox, BM_GETCHECK, 0, 0) == BST_CHECKED;
+  settings.writeSettings();
+
+  return CallWindowProc(defWndProc, hwnd, message, wParam, lParam);
+}
+
+LRESULT onSmoothScrollCheckboxClicked(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  settings.smoothScroll = SendMessage(smoothScrollCheckbox, BM_GETCHECK, 0, 0) == BST_CHECKED;
   settings.writeSettings();
 
   return CallWindowProc(defWndProc, hwnd, message, wParam, lParam);
@@ -405,6 +415,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
   if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && reinterpret_cast<HWND>(lParam) == fullscreenCheckbox) return onFullscreenCheckboxClicked(hwnd, message, wParam, lParam);
   if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && reinterpret_cast<HWND>(lParam) == cutscene43Checkbox) return onCutscene43CheckboxClicked(hwnd, message, wParam, lParam);
+  if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && reinterpret_cast<HWND>(lParam) == smoothScrollCheckbox) return onSmoothScrollCheckboxClicked(hwnd, message, wParam, lParam);
   if (message == WM_COMMAND && HIWORD(wParam) == CBN_SELCHANGE && reinterpret_cast<HWND>(lParam) == resolutionCombo) return onResolutionChanged(hwnd, message, wParam, lParam);
   if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && reinterpret_cast<HWND>(lParam) == hostGameRadio) return onServerOrClientRadioClicked(hwnd, message, wParam, lParam);
   if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && reinterpret_cast<HWND>(lParam) == connectToServerRadio) return onServerOrClientRadioClicked(hwnd, message, wParam, lParam);
@@ -561,6 +572,9 @@ int wmain(int argc, wchar_t* argv[])
     y += ySpace;
 
     cutscene43Checkbox = CreateWindowEx(0, WC_BUTTON, L"Cutscene movies / FMV in 4:3 (black bars)", WS_CHILD | BS_AUTOCHECKBOX | WS_VISIBLE, x, y, 290, 24, window, nullptr, nullptr, nullptr);
+    y += ySpace;
+
+    smoothScrollCheckbox = CreateWindowEx(0, WC_BUTTON, L"Smooth map scrolling", WS_CHILD | BS_AUTOCHECKBOX | WS_VISIBLE, x, y, 290, 24, window, nullptr, nullptr, nullptr);
     y += ySpace;
 
     y += ySpace;

@@ -11,6 +11,7 @@
 #include "Log.hpp"
 #include "PickingTracer.hpp"
 #include "MovieFix.hpp"
+#include "SmoothScroll.hpp"
 
 
 LARGE_INTEGER lastFrameTime = {};
@@ -40,6 +41,8 @@ HRESULT STDMETHODCALLTYPE My_IDirect3DDevice7_EndScene(IDirect3DDevice7* This)
 {
   if (gWidescreen)
     tracerNoteThread();
+
+  smoothScrollUpdateFrame(); // refresh the frame-time scroll multiplier (no-op unless smooth scroll is on)
 
   LARGE_INTEGER nextFrameTime = {};
   nextFrameTime.QuadPart = lastFrameTime.QuadPart + qpcFreq.QuadPart / targetFps;

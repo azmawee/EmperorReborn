@@ -71,6 +71,9 @@
     <ClInclude Include="WolProxyClient.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="SmoothScroll.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -119,6 +122,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WolProxyClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmoothScroll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

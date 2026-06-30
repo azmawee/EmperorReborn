@@ -43,6 +43,10 @@ public:
   // to ScreenWidth/ScreenHeight and let the monitor do the upscaling (reshuffles the desktop).
   bool upscaleToDesktop = false;
 
+  // Framerate-normalized smooth map scrolling: scale the map scroll/pan by the real frame time so it
+  // stays smooth instead of stepping a fixed amount per frame. On by default.
+  bool smoothScroll = true;
+
 public:
   void readSettings()
   {
@@ -105,6 +109,10 @@ public:
     if (upscaleToDesktopTemp)
       upscaleToDesktop = *upscaleToDesktopTemp == "1";
 
+    std::optional<std::string> smoothScrollTemp = regReadString(key, "SmoothScroll");
+    if (smoothScrollTemp)
+      smoothScroll = *smoothScrollTemp == "1";
+
     RegCloseKey(key);
   }
 
@@ -126,6 +134,7 @@ public:
     regWriteString(key, "Pillarbox", pillarbox ? "1" : "0");
     regWriteString(key, "Cutscene43", cutscene43 ? "1" : "0");
     regWriteString(key, "UpscaleToDesktop", upscaleToDesktop ? "1" : "0");
+    regWriteString(key, "SmoothScroll", smoothScroll ? "1" : "0");
 
     RegCloseKey(key);
   }
