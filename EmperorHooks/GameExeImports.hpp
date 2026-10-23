@@ -161,8 +161,8 @@ typedef void(__cdecl* PFN_CPortUtil_Set_Port_Range)(unsigned __int16 port_h_min,
 #define CPortUtil_Set_Port_Range ((PFN_CPortUtil_Set_Port_Range)0x005AEF60)
 
 #define IMP(type, address) (*((type*)address))
-#define somethingThatControlsExitingCdCheckLoop IMP(int, 0x007CBC68)
-#define currentCdDataPath IMP(char*, 0x007CBC50)
+#define cdPathTableCount IMP(int, 0x007CBC68)
+#define cdPathTable ((const char* const*)0x007CBC50)
 #define gDoQuit IMP(uint8_t, 0x007D75AC)
 #define mainWindowHandle IMP(HWND, 0x007D75A8)
 #define pResourceManager IMP(int*, 0x007D75B8)

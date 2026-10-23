@@ -153,8 +153,9 @@ static char __cdecl doCdCheckPatched(int cdIndex, char a2)
   // non-campaign game, any game CD will do
   else
   {
-    for (int i = 0; i < somethingThatControlsExitingCdCheckLoop; i++)
+    for (int i = 0; i < cdPathTableCount; i++)
     {
+      const char * currentCdDataPath = cdPathTable[i];
       bool ok = true;
       if (isPathADiskRoot(currentCdDataPath))
       {
