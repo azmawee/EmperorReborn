@@ -148,7 +148,7 @@ static char __cdecl doCdCheckPatched(int cdIndex, char a2)
       Sleep(500u);
     }
 
-    return 0;
+    return 1; // assume we have the right CD anyway
   }
   // non-campaign game, any game CD will do
   else
@@ -228,7 +228,7 @@ static char __cdecl doCdCheckPatched(int cdIndex, char a2)
     }
   }
 
-  return 0;
+  return 1; // assume we have the right CD anyway
 }
 
 void patchCdCheck()
