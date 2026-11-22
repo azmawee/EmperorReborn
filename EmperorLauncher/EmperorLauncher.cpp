@@ -463,10 +463,25 @@ std::string getMd5OfFile(const std::string& path)
 
 int wmain(int argc, wchar_t* argv[])
 {
+  // Command line:
+  //   EmperorReborn.exe [--skip-game-exe-check] [installDir]
+
   std::wstring installDirUnicode;
-  if (argc > 1)
-    installDirUnicode = argv[1];
-  else
+  bool skipGameExeCheck = false;
+
+  for (int i = 1; i < argc; i++)
+  {
+    const std::wstring arg = argv[i];
+
+    if (arg == L"--skip-game-exe-check")
+      skipGameExeCheck = true;
+    else if (!arg.empty() && arg[0] == L'-')
+      fprintf(stderr, "Ignoring unknown option: %ls\n", arg.c_str());
+    else
+      installDirUnicode = arg;
+  }
+
+  if (installDirUnicode.empty())
     installDirUnicode = getFolderThisExeIsIn() + L"\\data";
 
   // This is unfortunate, but I just don't want to deal with debugging it.
@@ -499,7 +514,7 @@ int wmain(int argc, wchar_t* argv[])
       return 1;
     }
   }
-  else if (gameExeMd5 != desiredMd5)
+  else if (!skipGameExeCheck && gameExeMd5 != desiredMd5)
   {
     // Game.exe exists but is not the original v1.09 build the patches are written for (e.g. another
     // mod's patched exe, or a different patch level). Warn, but let the user run anyway if they want.
