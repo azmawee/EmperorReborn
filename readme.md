@@ -10,8 +10,6 @@ fullscreen scaling and working multiplayer.
 
 ![Emperor: Battle for Dune running in 16:9 widescreen](screenshots/gameplay-2.png)
 
-**Development blog:** <https://azmawee.github.io/EmperorReborn/widescreen-story>
-
 I wanted to play Emperor again and ran into the usual problems with a 25-year-old game on modern
 Windows: the installer fights the OS, and even once it runs the game sits in a small box in the
 middle of the monitor. Multiplayer has been dead since Westwood Online shut down.
@@ -23,14 +21,9 @@ edit the registry by hand.
 
 ## What this adds on top of wheybags' patch
 
-- **True widescreen (16:9).** The headline feature. Every other way of running Emperor wide either
-  stretches it fat or crops the top and bottom off. This widens the actual view instead: the
-  battlefield renders at the real aspect with no stretching, and the harder half (sidebar, cursor,
-  edge scroll and menus) lines up correctly too. The in-mission sidebar/HUD layout builds on Moro's
-  widescreen patch, shared freely in the Emperor community on Discord and used with thanks; the 3D
-  camera scaling and the front-end menu and star-map fixes are this project's. As far as I can tell it
-  is the first real widescreen for this game in the 25 years since release where the whole interface
-  works.
+- **True widescreen (16:9).** Real widescreen that widens the view instead of stretching or cropping,
+  with the in-game sidebar, cursor, edge scroll, menus and star map all still lining up. The technical
+  story is in [How the widescreen was built](#how-the-widescreen-was-built).
 - **Fullscreen scaling.** Your chosen resolution fills the whole monitor instead of pillarboxing.
   On a 4K screen the original resolutions are unusably tiny otherwise.
 - **Upscale for big, readable UI at 4K.** On a 4K monitor the sharp modes make the HUD and text tiny.
@@ -173,6 +166,27 @@ of the original patch.
   - AMD, including handhelds like the ROG/Xbox Ally: turn off GPU scaling and set scaling mode to
     preserve aspect ratio.
   - On a 1080p screen, 1024x768 fullscreen looks good.
+
+## How the widescreen was built
+
+Emperor is a 4:3 game from 2001. Stretching the picture makes it fat, and cropping loses the top and
+bottom. Real widescreen meant changing the camera, not the final image.
+
+The first try looked right: I rewrote the Direct3D projection matrix and the battlefield went wide.
+Then the menus stopped responding. The game keeps its own projection for mouse picking, so the picture
+and the clicks were using different numbers.
+
+Reading the executable showed why. Emperor runs on Xanadu with the W3D renderer, and in W3D both
+rendering and picking share one camera distance. Scaling that distance made the whole 3D scene wide
+and kept the clicks aligned, applied from outside the game every frame with a breakpoint and an
+exception handler, without touching the files on disk. Moro's in-game HUD fix covered the sidebar.
+
+Three screens still misbehaved: the star map, Mentat briefings and house select. Clicks landed three
+quarters of the way in, which is 960/1280, the 4:3 to 16:9 ratio. A live tuner showed the number had
+to be four thirds. On those screens the widescreen scale was breaking the click math, so the fix was
+two lines that skip it there and widen the background another way.
+
+That is the whole story behind the one line that says the interface works at 16:9.
 
 ## Credits and license
 
