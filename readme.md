@@ -10,6 +10,8 @@ fullscreen scaling and working multiplayer.
 
 ![Emperor: Battle for Dune running in 16:9 widescreen](screenshots/gameplay-2.png)
 
+**Development blog:** <https://azmawee.github.io/EmperorReborn/widescreen-story>
+
 I wanted to play Emperor again and ran into the usual problems with a 25-year-old game on modern
 Windows: the installer fights the OS, and even once it runs the game sits in a small box in the
 middle of the monitor. Multiplayer has been dead since Westwood Online shut down.
@@ -152,8 +154,7 @@ powershell -ExecutionPolicy Bypass -File .\package.ps1 -Version 2.0
 ```
 
 wheybags wrote a good [blog post](https://wheybags.com/blog/emperor.html) on the technical details
-of the original patch. I wrote up the widescreen reverse engineering, including the front-end click
-bug, on the [site](https://azmawee.github.io/EmperorReborn/widescreen-story).
+of the original patch.
 
 ## If something's off
 
