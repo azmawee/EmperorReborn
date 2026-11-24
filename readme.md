@@ -152,7 +152,8 @@ powershell -ExecutionPolicy Bypass -File .\package.ps1 -Version 2.0
 ```
 
 wheybags wrote a good [blog post](https://wheybags.com/blog/emperor.html) on the technical details
-of the original patch.
+of the original patch. I wrote up the widescreen reverse engineering, including the front-end click
+bug, on the [site](https://azmawee.github.io/EmperorReborn/widescreen-story).
 
 ## If something's off
 
